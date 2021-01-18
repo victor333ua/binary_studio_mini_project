@@ -1,3 +1,7 @@
 const { override, useEslintRc } = require('customize-cra');
 
-module.exports = override(useEslintRc());
+const path = require('path');
+
+module.exports = override(
+  useEslintRc(path.resolve(__dirname, '.eslintrc')),
+);
