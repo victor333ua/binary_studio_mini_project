@@ -43,6 +43,7 @@
     "validator": "13.0.0"
   },
   "devDependencies": {
+    "customize-cra-eslint": "^0.1.3",
     "eslint-config-airbnb": "18.1.0",
     "eslint-plugin-import": "2.20.2",
     "eslint-plugin-jsx-a11y": "6.2.3",

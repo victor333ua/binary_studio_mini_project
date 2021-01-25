@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "auth0.secret-key",
+      "type": "java.lang.String",
+      "description": "Description for auth0.secret-key."
+    },
+    {
+      "name": "imgur.id",
+      "type": "java.lang.String",
+      "description": "Description for imgur.id."
+    },
+    {
+      "name": "imgur.secret",
+      "type": "java.lang.String",
+      "description": "Description for imgur.secret."
+    }
+  ] }

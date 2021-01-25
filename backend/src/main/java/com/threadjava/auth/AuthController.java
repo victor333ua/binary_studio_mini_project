@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     @Autowired
     private AuthService authService;
-    @Autowired
-    private UsersService userDetailsService;
 
     @PostMapping("/register")
     public AuthUserDTO signUp(@RequestBody UserRegisterDto user) throws Exception {

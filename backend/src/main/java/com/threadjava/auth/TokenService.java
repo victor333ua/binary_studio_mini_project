@@ -2,6 +2,7 @@ package com.threadjava.auth;
 
 import com.threadjava.auth.model.AuthUser;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -23,26 +24,36 @@ import static com.threadjava.config.SecurityConstants.EXPIRATION_TIME;
 @Service
 public class TokenService {
 
-    @Value(value = "${auth0.secret-key}")
+    @Value("${auth0.secret-key}")
     private String SECRET_KEY;
 
-    public String extractUserid(String token) {
+    private SecretKey key() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
+    }
+
+    public String extractUserId(String token) throws Exception {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Date extractExpiration(String token) {
+    public Date extractExpiration(String token) throws Exception {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) throws Exception {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+    private Claims extractAllClaims(String token) throws Exception {
+        Claims claims;
+        try {
+            claims = Jwts.parser().setSigningKey(key()).parseClaimsJws(token).getBody();
+        } catch (JwtException ex) {
+            throw new Exception("can't read token error= " + ex);
+        }
+        return claims;
     }
 
-    public Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) throws Exception {
         return extractExpiration(token).before(new Date());
     }
 
@@ -52,13 +63,12 @@ public class TokenService {
     }
 
     private String createToken(Map<String, Object> claims, UUID subject) {
-        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject.toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }
 

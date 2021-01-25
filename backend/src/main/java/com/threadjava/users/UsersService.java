@@ -2,7 +2,6 @@ package com.threadjava.users;
 
 import com.threadjava.auth.model.AuthUser;
 import com.threadjava.users.dto.UserDetailsDto;
-import com.threadjava.users.dto.UserShortDto;
 import com.threadjava.users.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -36,7 +36,8 @@ public class AuthService {
     public AuthUserDTO login(UserLoginDTO user) throws Exception {
         Authentication auth;
         try {
-            auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+            auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
         }
         catch (BadCredentialsException e) {
             throw new Exception("Incorrect username or password", e);

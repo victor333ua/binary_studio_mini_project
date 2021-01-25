@@ -17,7 +17,7 @@ import java.io.IOException;
 
 @Service
 public class ImageService {
-    @Value(value = "${imgur.id}")
+    @Value("${imgur.id}")
     private String IMGUR_ID;
     @Autowired
     ImageRepository imageRepository;

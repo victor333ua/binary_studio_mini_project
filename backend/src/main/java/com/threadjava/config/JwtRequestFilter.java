@@ -33,22 +33,24 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        UsernamePasswordAuthenticationToken authentication = getAuthentication(header);
+        UsernamePasswordAuthenticationToken authentication;
+        try {
+            authentication = getAuthentication(header);
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(request, response);
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(String token) {
-        if (token != null) {
-            var tokenString = token.replace(TOKEN_PREFIX, "");
-            // parse the token.
-            String user = tokenService.extractUserid(tokenString);
-            if (user != null && !tokenService.isTokenExpired(tokenString)) {
-                return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
-            }
-            return null;
-        }
-        return null;
+    private UsernamePasswordAuthenticationToken getAuthentication(String header) throws Exception {
+        var tokenString = header.replace(TOKEN_PREFIX, "");
+        // parse the token.
+        String userId = tokenService.extractUserId(tokenString);
+        if (userId == null) throw new Exception("userId from token == null");
+        if (tokenService.isTokenExpired(tokenString))  throw new Exception("token expired");
+
+        return new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());
     }
 }

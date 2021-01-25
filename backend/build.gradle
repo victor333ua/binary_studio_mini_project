@@ -4,6 +4,7 @@ plugins {
 	id 'java'
 	id 'net.ltgt.apt' version '0.8'
 }
+compileJava.inputs.files(processResources)
 
 group = 'com.thread-java'
 version = '0.0.1-SNAPSHOT'
