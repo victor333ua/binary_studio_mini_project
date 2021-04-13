@@ -1,21 +1,18 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import PropTypes from 'prop-types';
-import { login } from 'src/containers/Profile/actions';
 import Logo from 'src/components/Logo';
 import { Grid, Header, Message } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
-import LoginForm from 'src/components/LoginForm';
+import LoginForm from 'src/containers/LoginForm';
+import PropTypes from 'prop-types';
 
-const LoginPage = ({ login: signIn }) => (
+const LoginPage = ({ location }) => (
   <Grid textAlign="center" verticalAlign="middle" className="fill">
     <Grid.Column style={{ maxWidth: 450 }}>
       <Logo />
       <Header as="h2" color="teal" textAlign="center">
         Login to your account
       </Header>
-      <LoginForm login={signIn} />
+      <LoginForm location={location}/>
       <Message>
         New to us?
         {' '}
@@ -25,15 +22,14 @@ const LoginPage = ({ login: signIn }) => (
   </Grid>
 );
 
-LoginPage.propTypes = {
-  login: PropTypes.func.isRequired
+LoginPage.defaultProps = {
+  location: undefined
 };
 
-const actions = { login };
+LoginPage.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  location: PropTypes.any
+};
 
-const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);
+export default LoginPage;
 
-export default connect(
-  null,
-  mapDispatchToProps
-)(LoginPage);

@@ -26,13 +26,14 @@ export const getPost = async id => {
   return response.json();
 };
 
-export const likePost = async postId => {
+export const likePost = async (postId, postOwnerId, isLike) => {
   const response = await callWebApi({
     endpoint: '/api/postreaction',
     type: 'PUT',
     request: {
       postId,
-      isLike: true
+      postOwnerId,
+      isLike
     }
   });
   return response.json();

@@ -1,7 +1,6 @@
 package com.threadjava.postReactions;
 
-import com.threadjava.postReactions.dto.ReceivedPostReactionDto;
-import com.threadjava.postReactions.dto.ResponsePostReactionDto;
+import com.threadjava.postReactions.dto.PostReactionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,14 +20,16 @@ public class PostReactionController {
     private SimpMessagingTemplate template;
 
     @PutMapping
-    public Optional<ResponsePostReactionDto> setReaction(@RequestBody ReceivedPostReactionDto postReaction){
-        postReaction.setUserId(getUserId());
-        var reaction = postsService.setReaction(postReaction);
+    public Optional<Boolean> setReaction(@RequestBody PostReactionDto postReaction) throws Exception {
+        var currentUser = getUserId();
+        postReaction.setUserId(currentUser);
+        var isNewRecord = postsService.setReaction(postReaction);
 
-        if (reaction.isPresent() && reaction.get().getUserId() != getUserId()) {
+//        if (reaction.isPresent() && reaction.get().getUserId() != getUserId()) {
+        if (isNewRecord.isPresent() && postReaction.getPostOwnerId() != currentUser) {
             // notify a user if someone (not himself) liked his post
             template.convertAndSend("/topic/like", "Your post was liked!");
         }
-        return reaction;
+        return isNewRecord;
     }
 }

@@ -5,6 +5,8 @@ import java.util.UUID;
 
 @Data
 public class PostReactionDto {
-    private UUID id;
+    private UUID postId;
+    private UUID postOwnerId;
     private Boolean isLike;
+    private UUID userId;
 }

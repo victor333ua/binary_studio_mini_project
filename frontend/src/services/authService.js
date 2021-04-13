@@ -1,8 +1,8 @@
 import callWebApi from 'src/helpers/webApiHelper';
 
-export const login = async request => {
+const authenticate = logreg => async request => {
   const response = await callWebApi({
-    endpoint: '/api/auth/login',
+    endpoint: `/api/auth/${logreg}`,
     type: 'POST',
     skipAuthorization: true,
     request
@@ -10,15 +10,8 @@ export const login = async request => {
   return response.json();
 };
 
-export const registration = async request => {
-  const response = await callWebApi({
-    endpoint: '/api/auth/register',
-    type: 'POST',
-    skipAuthorization: true,
-    request
-  });
-  return response.json();
-};
+export const login = authenticate('login');
+export const registration = authenticate('register');
 
 export const getCurrentUser = async () => {
   try {

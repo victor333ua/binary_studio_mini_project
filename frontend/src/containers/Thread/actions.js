@@ -56,14 +56,37 @@ export const toggleExpandedPost = postId => async dispatch => {
   dispatch(setExpandedPostAction(post));
 };
 
-export const likePost = postId => async (dispatch, getRootState) => {
-  const result = await postService.likePost(postId);
-  const diff = result?.id ? 1 : -1; // if ID exists then the post was liked, otherwise - like was removed
+export const likePost = (postId, postOwnerId, isLike) => async (dispatch, getRootState) => {
+  let isNewRecord;
+  try {
+    isNewRecord = await postService.likePost(postId, postOwnerId, isLike);
+  } catch (err) {
+    console.log(err);
+  }
+  // const diff = result?.id ? 1 : -1; // if ID exists then the post was liked, otherwise - like was removed
 
-  const mapLikes = post => ({
-    ...post,
-    likeCount: Number(post.likeCount) + diff // diff is taken from the current closure
-  });
+  // console.log(isNewRecord);
+
+  let diff = 1;
+  if (isNewRecord == null) diff = -1; // Optional.empty return null (|| Object.keys(result).length === 0)
+
+  const reactions = isLike ? ['likeCount', 'dislikeCount'] : ['dislikeCount', 'likeCount'];
+
+  // if double usage reaction - delete record - decrease counter (response - null)
+  // if new record - increase counter for first (isNewRecord - true)
+  // if for existing record we change reaction - increase first & decrease second (isNewRecord - false)
+
+  const mapLikes = post => {
+    const newState = {
+      ...post,
+      [reactions[0]]: Number(post[reactions[0]]) + diff // diff is taken from the current closure
+    };
+    if (isNewRecord === false) {
+      newState[reactions[1]] = Number(post[reactions[1]]) - 1;
+    }
+    // console.log([newState.likeCount, newState.dislikeCount]);
+    return newState;
+  };
 
   const { posts: { posts, expandedPost } } = getRootState();
   const updated = posts.map(post => (post.id !== postId ? post : mapLikes(post)));

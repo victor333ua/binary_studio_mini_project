@@ -4,15 +4,15 @@ import com.threadjava.db.BaseEntity;
 import com.threadjava.post.model.Post;
 import com.threadjava.users.model.User;
 import lombok.*;
+
 import javax.persistence.*;
 
-@Entity
 @Data
-@EqualsAndHashCode(callSuper=true)
+@Entity
 @Table(name = "post_reactions")
 public class PostReaction extends BaseEntity {
 
-    @Column(name = "isLike")
+    @Column(name = "is_like")
     private Boolean isLike;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
@@ -22,4 +22,12 @@ public class PostReaction extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public PostReaction() {
+    }
+
+    protected boolean canEqual(final Object other) {
+        return other instanceof PostReaction;
+    }
+
 }

@@ -1,30 +1,45 @@
 import * as authService from 'src/services/authService';
-import { SET_USER } from './actionTypes';
+import { GET_USER_REJECTED, SET_USER, USER_LOADING, USER_LOGOUT } from './actionTypes';
 
 const setToken = token => localStorage.setItem('token', token);
 
-const setUser = user => async dispatch => dispatch({
+const setUser = user => ({
   type: SET_USER,
   user
 });
 
-const setAuthData = (user = null, token = '') => (dispatch, getRootState) => {
-  setToken(token); // token should be set first before user
-  setUser(user)(dispatch, getRootState);
-};
+const userLoading = () => ({
+  type: USER_LOADING
+});
 
-const handleAuthResponse = authResponsePromise => async (dispatch, getRootState) => {
-  const { user, token } = await authResponsePromise;
-  setAuthData(user, token)(dispatch, getRootState);
+const userRejected = error => ({
+  type: GET_USER_REJECTED,
+  error
+});
+
+const handleAuthResponse = authResponsePromise => async dispatch => {
+  dispatch(userLoading());
+  try {
+    const { user, token } = await authResponsePromise;
+    setToken(token);
+    dispatch(setUser(user));
+  } catch (err) {
+    dispatch(userRejected(err));
+  }
 };
 
 export const login = request => handleAuthResponse(authService.login(request));
 
 export const register = request => handleAuthResponse(authService.registration(request));
 
-export const logout = () => setAuthData();
-
-export const loadCurrentUser = () => async (dispatch, getRootState) => {
-  const user = await authService.getCurrentUser();
-  setUser(user)(dispatch, getRootState);
+export const logout = () => {
+  setToken('');
+  return ({
+    type: USER_LOGOUT
+  });
 };
+
+// export const loadCurrentUser = () => async dispatch => {
+//   const user = await authService.getCurrentUser();
+//   dispatch(setUser(user));
+

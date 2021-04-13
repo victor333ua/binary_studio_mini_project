@@ -1,6 +1,6 @@
 package com.threadjava.postReactions;
 
-import com.threadjava.postReactions.dto.ReceivedPostReactionDto;
+import com.threadjava.postReactions.dto.PostReactionDto;
 import com.threadjava.postReactions.dto.ResponsePostReactionDto;
 import com.threadjava.postReactions.model.PostReaction;
 import org.mapstruct.Mapper;
@@ -20,5 +20,5 @@ public interface PostReactionMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    PostReaction dtoToPostReaction(ReceivedPostReactionDto postReactionDto);
+    PostReaction dtoToPostReaction(PostReactionDto postReactionDto);
 }
