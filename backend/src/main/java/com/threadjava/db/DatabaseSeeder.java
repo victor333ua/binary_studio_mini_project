@@ -61,7 +61,9 @@ public class DatabaseSeeder {
     }
 
     private void seedUsersTable(){
-        List<Image> userImages = jdbcTemplate.query("SELECT * FROM images WHERE link IN ("+ imagesToString(getUserImages()) +")", DatabaseSeeder::mapRowImage);
+        List<Image> userImages = jdbcTemplate.query(
+                "SELECT * FROM images WHERE link IN ("+ imagesToString(getUserImages()) +")",
+                DatabaseSeeder::mapRowImage);
 
         var user1 = new User();
         user1.setEmail("demo@demo.com");
@@ -93,7 +95,9 @@ public class DatabaseSeeder {
 
     private void seedPostsTable() {
         var randomize = new Random();
-        List<Image> postImages = jdbcTemplate.query("SELECT * FROM images WHERE link IN ("+ imagesToString(getPostImages()) +")", DatabaseSeeder::mapRowImage);
+        List<Image> postImages = jdbcTemplate.query(
+                "SELECT * FROM images WHERE link IN ("+ imagesToString(getPostImages()) +")",
+                DatabaseSeeder::mapRowImage);
         var users = usersRepository.findAll();
 
         String[] postBodies = { "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
@@ -122,12 +126,14 @@ public class DatabaseSeeder {
 
     private void seedCommentsTable() {
         var randomize = new Random();
-        var users = StreamSupport
-                .stream(usersRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
-        var posts = StreamSupport
-                .stream(postsRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
+//        var users = StreamSupport
+//                .stream(usersRepository.findAll().spliterator(), false)
+//                .collect(Collectors.toList());
+//        var posts = StreamSupport
+//                .stream(postsRepository.findAll().spliterator(), false)
+//                .collect(Collectors.toList());
+        var users = usersRepository.findAll();
+        var posts = postsRepository.findAll();
 
         String[] commentsText = {
                 "laudantium enim quasi est quidem magnam voluptate ipsam eos\ntempora quo necessitatibus\ndolor quam autem quasi\nreiciendis et nam sapiente accusantium",
@@ -220,12 +226,13 @@ public class DatabaseSeeder {
     }
 
     private String imagesToString(List<Image>  images){
-        return String.join(",", images.stream().map(x -> "'" + x.getLink() + "'").collect(Collectors.toList()));
+//        return String.join(",", images.stream().map(x -> "'" + x.getLink() + "'").collect(Collectors.toList()));
+        return images.stream().map(x -> "'" + x.getLink() + "'").collect(Collectors.joining(","));
     }
-
 
     private static Image mapRowImage(ResultSet resultSet, int rowNum) throws SQLException {
         Image image = new Image();
+  // it's enough to connect entities
         image.setId(UUID.fromString(resultSet.getString("Id")));
         return image;
     }

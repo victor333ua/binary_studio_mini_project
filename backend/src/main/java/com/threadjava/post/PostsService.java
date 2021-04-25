@@ -6,7 +6,11 @@ import com.threadjava.post.model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -44,5 +48,16 @@ public class PostsService {
         Post post = PostMapper.MAPPER.postDetailsDtoToPost(postDto);
         Post postCreated = postsCrudRepository.save(post);
         return PostMapper.MAPPER.postToPostCreationResponseDto(postCreated);
+    }
+    @Transactional
+    public void delete (UUID id) {
+        postsCrudRepository.deleteById(id);
+    }
+
+    public void update(PostUpdateDto postUpdateDto) {
+        var post = postsCrudRepository.findById(postUpdateDto.getId())
+                .orElseThrow();
+        post.setBody(postUpdateDto.getBody());
+        postsCrudRepository.save(post);
     }
 }

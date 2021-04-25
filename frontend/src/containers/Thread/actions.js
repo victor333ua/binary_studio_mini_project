@@ -4,7 +4,9 @@ import {
   ADD_POST,
   LOAD_MORE_POSTS,
   SET_ALL_POSTS,
-  SET_EXPANDED_POST
+  SET_EXPANDED_POST,
+  DELETE_POST,
+  UPDATE_POST
 } from './actionTypes';
 
 const setPostsAction = posts => ({
@@ -24,6 +26,16 @@ const addPostAction = post => ({
 
 const setExpandedPostAction = post => ({
   type: SET_EXPANDED_POST,
+  post
+});
+
+const deletePostAction = id => ({
+  type: DELETE_POST,
+  id
+});
+
+const updatePostAction = post => ({
+  type: UPDATE_POST,
   post
 });
 
@@ -57,29 +69,26 @@ export const toggleExpandedPost = postId => async dispatch => {
 };
 
 export const likePost = (postId, postOwnerId, isLike) => async (dispatch, getRootState) => {
+  // if double usage reaction - delete record - decrease counter (response - null)
+  // if new record in db - increase counter for first elem in array (isNewRecord - true)
+  // if for existing record in db we change reaction - increase first & decrease second (isNewRecord - false)
+
   let isNewRecord;
   try {
     isNewRecord = await postService.likePost(postId, postOwnerId, isLike);
   } catch (err) {
     console.log(err);
   }
-  // const diff = result?.id ? 1 : -1; // if ID exists then the post was liked, otherwise - like was removed
-
-  // console.log(isNewRecord);
 
   let diff = 1;
   if (isNewRecord == null) diff = -1; // Optional.empty return null (|| Object.keys(result).length === 0)
 
   const reactions = isLike ? ['likeCount', 'dislikeCount'] : ['dislikeCount', 'likeCount'];
 
-  // if double usage reaction - delete record - decrease counter (response - null)
-  // if new record - increase counter for first (isNewRecord - true)
-  // if for existing record we change reaction - increase first & decrease second (isNewRecord - false)
-
   const mapLikes = post => {
     const newState = {
       ...post,
-      [reactions[0]]: Number(post[reactions[0]]) + diff // diff is taken from the current closure
+      [reactions[0]]: Number(post[reactions[0]]) + diff
     };
     if (isNewRecord === false) {
       newState[reactions[1]] = Number(post[reactions[1]]) - 1;
@@ -96,6 +105,24 @@ export const likePost = (postId, postOwnerId, isLike) => async (dispatch, getRoo
   if (expandedPost && expandedPost.id === postId) {
     dispatch(setExpandedPostAction(mapLikes(expandedPost)));
   }
+};
+
+export const deletePost = id => async dispatch => {
+  try {
+    await postService.deletePost(id);
+  } catch (err) {
+    console.log(err);
+  }
+  dispatch(deletePostAction(id));
+};
+
+export const updatePost = post => async dispatch => {
+  try {
+    await postService.editPost(post);
+  } catch (err) {
+    console.log(err);
+  }
+  dispatch(updatePostAction(post));
 };
 
 export const addComment = request => async (dispatch, getRootState) => {

@@ -4,7 +4,6 @@ import validator from 'validator';
 import { Form, Button, Segment } from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Spinner from 'src/components/Spinner';
 import { Redirect } from 'react-router-dom';
 import { login } from '../Profile/actions';
 
@@ -18,8 +17,6 @@ const LoginForm = ({
   const [password, setPassword] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
-
-  if (status === 'loading') return <Spinner />;
 
   if (status === 'completed') {
     const from = location.state?.from || { pathname: '/' };

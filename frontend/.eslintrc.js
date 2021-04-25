@@ -39,6 +39,7 @@ module.exports=
     "object-curly-newline": "off",
     "arrow-parens": ["error", "as-needed"],
     "linebreak-style": 0, //["error", "windows"]
-    "react/jsx-tag-spacing": "off"
+    "react/jsx-tag-spacing": "off",
+    "no-trailing-spaces": "off"
   }
 }

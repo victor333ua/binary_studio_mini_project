@@ -8,6 +8,8 @@ import lombok.*;
 import javax.persistence.*;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "post_reactions")
 public class PostReaction extends BaseEntity {
@@ -22,9 +24,6 @@ public class PostReaction extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "post_id")
     private Post post;
-
-    public PostReaction() {
-    }
 
     protected boolean canEqual(final Object other) {
         return other instanceof PostReaction;

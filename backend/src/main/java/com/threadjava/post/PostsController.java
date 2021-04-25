@@ -38,4 +38,14 @@ public class PostsController {
         template.convertAndSend("/topic/new_post", item);
         return item;
     }
+    @DeleteMapping("/{postId}")
+    public void delete(@PathVariable UUID postId) {
+        postsService.delete(postId);
+    }
+
+    @PutMapping
+    public void update(@RequestBody PostUpdateDto postUpdateDto) {
+        postsService.update(postUpdateDto);
+    }
+
 }

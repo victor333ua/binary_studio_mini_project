@@ -10,7 +10,7 @@ import AddPost from 'src/components/AddPost';
 import SharedPostLink from 'src/components/SharedPostLink';
 import { Checkbox, Loader } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
-import { loadPosts, loadMorePosts, likePost, toggleExpandedPost, addPost } from './actions';
+import { loadPosts, loadMorePosts, likePost, toggleExpandedPost, addPost, updatePost, deletePost } from './actions';
 
 import styles from './styles.module.scss';
 
@@ -29,7 +29,9 @@ const Thread = ({
   hasMorePosts,
   addPost: createPost,
   likePost: like,
-  toggleExpandedPost: toggle
+  toggleExpandedPost: toggle,
+  deletePost: cut,
+  updatePost: update
 }) => {
   const [sharedPostId, setSharedPostId] = useState(undefined);
   const [showOwnPosts, setShowOwnPosts] = useState(false);
@@ -75,10 +77,13 @@ const Thread = ({
       >
         {posts.map(post => (
           <Post
+            userId={userId}
             post={post}
             likePost={like}
             toggleExpandedPost={toggle}
             sharePost={sharePost}
+            deletePost={cut}
+            updatePost={update}
             key={post.id}
           />
         ))}
@@ -98,7 +103,9 @@ Thread.propTypes = {
   loadMorePosts: PropTypes.func.isRequired,
   likePost: PropTypes.func.isRequired,
   toggleExpandedPost: PropTypes.func.isRequired,
-  addPost: PropTypes.func.isRequired
+  addPost: PropTypes.func.isRequired,
+  updatePost: PropTypes.func.isRequired,
+  deletePost: PropTypes.func.isRequired
 };
 
 Thread.defaultProps = {
@@ -120,7 +127,9 @@ const actions = {
   loadMorePosts,
   likePost,
   toggleExpandedPost,
-  addPost
+  addPost,
+  updatePost,
+  deletePost
 };
 
 const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);

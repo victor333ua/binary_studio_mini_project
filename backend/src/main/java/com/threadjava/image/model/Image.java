@@ -2,10 +2,16 @@ package com.threadjava.image.model;
 
 import com.threadjava.db.BaseEntity;
 import lombok.*;
-import javax.persistence.*;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Getter
+@Setter
 @Entity
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper=true)
 @Table(name = "images")
 public class Image extends BaseEntity {
@@ -15,4 +21,5 @@ public class Image extends BaseEntity {
 
     @Column(name = "delete_hash", nullable = false)
     private String deleteHash;
+
 }

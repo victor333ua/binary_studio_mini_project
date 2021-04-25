@@ -20,7 +20,7 @@ public interface PostsRepository extends JpaRepository<Post, UUID> {
             "p.createdAt, i, p.user) " +
             "FROM Post p " +
             "LEFT JOIN p.image i " +
-            "WHERE ( cast(:userId as string) is null OR p.user.id = :userId) " +
+            "WHERE ( cast(:userId as string) is null OR p.user.id = :userId AND p.deleted = false) " +
             "order by p.createdAt desc" )
     List<PostListQueryResult> findAllPosts(@Param("userId") UUID userId, Pageable pageable);
 
@@ -31,6 +31,6 @@ public interface PostsRepository extends JpaRepository<Post, UUID> {
             "p.createdAt, p.updatedAt, i, p.user) " +
             "FROM Post p " +
             "LEFT JOIN p.image i " +
-            "WHERE p.id = :id")
+            "WHERE p.id = :id AND p.deleted = false")
     Optional<PostDetailsQueryResult> findPostById(@Param("id") UUID id);
 }

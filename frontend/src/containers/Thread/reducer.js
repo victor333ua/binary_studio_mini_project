@@ -2,7 +2,9 @@ import {
   SET_ALL_POSTS,
   LOAD_MORE_POSTS,
   ADD_POST,
-  SET_EXPANDED_POST
+  SET_EXPANDED_POST,
+  DELETE_POST,
+  UPDATE_POST
 } from './actionTypes';
 
 export default (state = {}, action) => {
@@ -29,6 +31,24 @@ export default (state = {}, action) => {
         ...state,
         expandedPost: action.post
       };
+    case DELETE_POST: {
+      const index = state.posts.findIndex(post => post.id === action.id);
+      const updatePosts = [...state.posts];
+      updatePosts.splice(index, 1);
+      return {
+        ...state,
+        posts: updatePosts
+      };
+    }
+    case UPDATE_POST: {
+      const index = state.posts.findIndex(post => post.id === action.post.id);
+      const updatePosts = [...state.posts];
+      updatePosts.splice(index, 1, action.post);
+      return {
+        ...state,
+        posts: updatePosts
+      };
+    }
     default:
       return state;
   }
