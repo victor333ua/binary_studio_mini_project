@@ -10,7 +10,8 @@ import AddPost from 'src/components/AddPost';
 import SharedPostLink from 'src/components/SharedPostLink';
 import { Checkbox, Loader } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
-import { loadPosts, loadMorePosts, likePost, toggleExpandedPost, addPost, updatePost, deletePost } from './actions';
+import { loadPosts, loadMorePosts, likePost, addPost, updatePost, deletePost } from './actions';
+import { toggleExpandedPost } from '../ExpandedPost/actions';
 
 import styles from './styles.module.scss';
 

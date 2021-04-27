@@ -2,6 +2,8 @@ package com.threadjava.db;
 
 import com.threadjava.comment.CommentRepository;
 import com.threadjava.comment.model.Comment;
+import com.threadjava.commentReactions.model.CommentReaction;
+import com.threadjava.commentReactions.CommentReactionsRepository;
 import com.threadjava.image.ImageRepository;
 import com.threadjava.image.model.Image;
 import com.threadjava.post.PostsRepository;
@@ -24,7 +26,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @Component
 public class DatabaseSeeder {
@@ -42,6 +43,8 @@ public class DatabaseSeeder {
     private PostReactionsRepository postReactionsRepository;
     @Autowired
     private PasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private CommentReactionsRepository commentReactionsRepository;
 
     @EventListener
     public void seed(ContextRefreshedEvent event) {
@@ -52,6 +55,7 @@ public class DatabaseSeeder {
             seedPostsTable();
             seedCommentsTable();
             seedPostReactionsTable();
+            seedCommentReactionsTable();
         }
     }
 
@@ -242,5 +246,23 @@ public class DatabaseSeeder {
             return  null;
         }
         return list.get(index);
+    }
+
+    private void  seedCommentReactionsTable() {
+        var randomize = new Random();
+        var users = usersRepository.findAll();
+        var comments = commentRepository.findAll();
+        var reactions = Stream.concat(
+                IntStream.range(0, 25).mapToObj(x -> true),
+                IntStream.range(0, 25).mapToObj(x -> false))
+                .map(x -> {
+                    var reaction = new CommentReaction();
+                    reaction.setIsLike(x);
+                    reaction.setComment(comments.get(randomize.nextInt(comments.size())));
+                    reaction.setUser(users.get(randomize.nextInt(users.size())));
+                    return reaction;
+                })
+                .collect(Collectors.toList());
+        commentReactionsRepository.saveAll(reactions);
     }
 }

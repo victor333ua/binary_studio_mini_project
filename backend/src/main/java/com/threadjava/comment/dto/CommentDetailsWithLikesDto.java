@@ -1,19 +1,17 @@
-package com.threadjava.post.dto;
+package com.threadjava.comment.dto;
 
-import com.threadjava.image.dto.ImageDto;
 import com.threadjava.users.dto.UserDetailsDto;
+import com.threadjava.users.model.User;
 import lombok.Data;
+
 import java.util.Date;
 import java.util.UUID;
-
 @Data
-public class PostListDto {
+public class CommentDetailsWithLikesDto {
     private UUID id;
     private String body;
+    private UserDetailsDto user;
+    private Date createdAt;
     private long likeCount;
     private long dislikeCount;
-    private long commentCount;
-    private Date createdAt;
-    private ImageDto image;
-    private UserDetailsDto user;
 }

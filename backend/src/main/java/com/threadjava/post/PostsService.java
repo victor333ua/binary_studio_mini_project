@@ -1,6 +1,7 @@
 package com.threadjava.post;
 
 import com.threadjava.comment.CommentRepository;
+import com.threadjava.comment.CommentService;
 import com.threadjava.post.dto.*;
 import com.threadjava.post.model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -19,7 +18,7 @@ public class PostsService {
     @Autowired
     private PostsRepository postsCrudRepository;
     @Autowired
-    private CommentRepository commentRepository;
+    private CommentService commentService;
 
     public List<PostListDto> getAllPosts(Integer from, Integer count, UUID userId) {
         var pageable = PageRequest.of(from / count, count);
@@ -35,10 +34,7 @@ public class PostsService {
                 .map(PostMapper.MAPPER::postToPostDetailsDto)
                 .orElseThrow();
 
-        var comments = commentRepository.findAllByPostId(id)
-                .stream()
-                .map(PostMapper.MAPPER::commentToCommentDto)
-                .collect(Collectors.toList());
+        var comments = commentService.getCommentsByPostId(id);
         post.setComments(comments);
 
         return post;

@@ -1,5 +1,6 @@
 package com.threadjava.post.dto;
 
+import com.threadjava.comment.dto.CommentDetailsWithLikesDto;
 import com.threadjava.image.dto.ImageDto;
 import com.threadjava.users.dto.UserShortDto;
 import lombok.Data;
@@ -19,6 +20,6 @@ public class PostDetailsDto {
     public long likeCount;
     public long dislikeCount;
     public long commentCount;
-    private List<PostCommentDto> comments = new ArrayList<>();
+    private List<CommentDetailsWithLikesDto> comments = new ArrayList<>();
 //    @Getter @Setter public List<PostReactionDto> reactions = new ArrayList<>();
 }

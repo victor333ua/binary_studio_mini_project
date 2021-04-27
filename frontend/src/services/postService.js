@@ -48,7 +48,7 @@ export const deletePost = async postId => {
 };
 
 export const editPost = async post => {
-  const response = await callWebApi({
+  await callWebApi({
     endpoint: '/api/posts',
     type: 'PUT',
     request: {
@@ -56,8 +56,6 @@ export const editPost = async post => {
       body: post.body
     }
   });
-  console.log(response);
-  // return response.json();
 };
 
 // should be replaced by appropriate function

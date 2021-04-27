@@ -1,11 +1,11 @@
-package com.threadjava.post.dto;
+package com.threadjava.comment.dto;
 
 import lombok.Data;
+
 import java.util.UUID;
 
 @Data
-public class PostCommentDto {
+public class CommentUpdateDto {
     private UUID id;
     private String body;
-    private PostUserDto user;
 }

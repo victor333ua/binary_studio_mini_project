@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Card, Image, Label, Icon, Form, Modal, Header, Button } from 'semantic-ui-react';
+import { Card, Image, Label, Icon, Form } from 'semantic-ui-react';
 import TextareaAutosize from 'react-textarea-autosize';
 import moment from 'moment';
 
 import styles from './styles.module.scss';
+import { DeleteDialog } from '../DeleteDialog';
 
 const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePost, updatePost }) => {
   const {
@@ -29,40 +30,16 @@ const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePos
     setDeleteDialog(false);
     deletePost(id);
   };
+  const onCloseDeleteDialog = () => setDeleteDialog(false);
+
   const onUpdatePost = () => {
     updatePost({ ...post, body: text });
     setEdit(false);
   };
 
-  const DeleteDialog = () => (
-    <Modal
-      open={openDeleteDialog}
-      size="tiny"
-    >
-      <Header>
-        Delete current post
-      </Header>
-      <Modal.Content>
-        <p>
-          Are you sure to delete?
-        </p>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button color="red" inverted onClick={() => setDeleteDialog(false)}>
-          <Icon name="remove" />
-          No
-        </Button>
-        <Button color="green" inverted onClick={() => onDeletePost()}>
-          <Icon name="checkmark" />
-          Yes
-        </Button>
-      </Modal.Actions>
-    </Modal>
-  );
-
   return (
     <>
-      <DeleteDialog />
+      <DeleteDialog open={openDeleteDialog} header="Delete Post" onClose={onCloseDeleteDialog} onDelete={onDeletePost}/>
       <Card style={{ width: '100%' }}>
         {image && <Image src={image.link} wrapped ui={false} />}
         <Card.Content>

@@ -27,7 +27,7 @@ public class PostReactionService {
             // if you click accidentally, you may to roll back by click once more
             if (react.getIsLike() == postReactionDto.getIsLike()) {
                 postReactionsRepository.deleteById(react.getId());
-                return Optional.empty();// delete record if double usage
+                return Optional.empty();// delete record in case of double usage
             } else {
                 react.setIsLike(postReactionDto.getIsLike());
                 var result = postReactionsRepository.save(react);

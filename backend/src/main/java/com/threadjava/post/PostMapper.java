@@ -1,13 +1,12 @@
 package com.threadjava.post;
 
-import com.threadjava.comment.model.Comment;
 import com.threadjava.image.ImageMapper;
 import com.threadjava.post.dto.*;
 import com.threadjava.post.model.Post;
+import com.threadjava.users.dto.UserDetailsDto;
 import com.threadjava.users.model.User;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-
 
 @Mapper(uses = { ImageMapper.class })
 public abstract class PostMapper {
@@ -39,7 +38,5 @@ public abstract class PostMapper {
     public abstract PostListDto postListToPostListDto(PostListQueryResult model);
 
     @Mapping(source = "avatar", target = "image")
-    public abstract PostUserDto postUserToPostUserDto(User model);
-
-    public abstract PostCommentDto commentToCommentDto(Comment comment);
+    public abstract UserDetailsDto postUserToPostUserDto(User model);
 }

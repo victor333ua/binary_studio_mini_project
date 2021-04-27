@@ -1,8 +1,12 @@
 package com.threadjava.comment;
 
 import com.threadjava.comment.dto.CommentDetailsDto;
+import com.threadjava.comment.dto.CommentDetailsQueryResult;
+import com.threadjava.comment.dto.CommentDetailsWithLikesDto;
 import com.threadjava.comment.dto.CommentSaveDto;
 import com.threadjava.comment.model.Comment;
+import com.threadjava.users.dto.UserDetailsDto;
+import com.threadjava.users.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -20,4 +24,9 @@ public interface CommentMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     Comment commentSaveDtoToModel(CommentSaveDto commentDto);
+
+    CommentDetailsWithLikesDto commentToCommentDto(CommentDetailsQueryResult comment);
+
+    @Mapping(source = "avatar", target = "image")
+    UserDetailsDto postUserToPostUserDto(User model);
 }
