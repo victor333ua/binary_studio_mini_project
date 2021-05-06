@@ -17,7 +17,8 @@ public class CommentController {
 
     @GetMapping("/{id}")
     public CommentDetailsWithLikesDto get(@PathVariable UUID id) {
-        return commentService.getCommentDetailsById(id); }
+        return commentService.getCommentDetailsWithLikesById(id);
+    }
 
     @PostMapping
     public CommentDetailsDto post(@RequestBody CommentSaveDto commentDto) {

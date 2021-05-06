@@ -1,5 +1,6 @@
 package com.threadjava.users.dto;
 
+import com.threadjava.image.dto.ImageDto;
 import lombok.*;
 
 import java.util.UUID;
@@ -10,4 +11,5 @@ import java.util.UUID;
 public class UserShortDto {
     private UUID id;
     private String username;
+    private ImageDto image;
 }

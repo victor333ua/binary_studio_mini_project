@@ -1,0 +1,23 @@
+:global(.ui.form .disabled.field) {
+  opacity: 1.00!important;
+
+  :global(.ui.disabled.input) {
+    opacity: 1.00!important;
+    input[disabled] {
+      background-color: #e8e5e5!important;
+    }
+
+    :global(.ui.button:disabled) {
+      border: 1px solid rgba(34, 36, 38, .15);
+      background-color: #e8e5e5;
+      opacity: 1.00!important;
+    }
+  }
+}
+
+:global(.ui.action.input .ui.button) {
+  border: 1px solid rgba(34, 36, 38, .15);
+  background-color: transparent;
+}
+
+

@@ -1,5 +1,6 @@
 import * as authService from 'src/services/authService';
 import { GET_USER_REJECTED, SET_USER, USER_LOADING, USER_LOGOUT } from './actionTypes';
+import * as userService from '../../services/userService';
 
 const setToken = token => localStorage.setItem('token', token);
 
@@ -29,17 +30,23 @@ const handleAuthResponse = authResponsePromise => async dispatch => {
 };
 
 export const login = request => handleAuthResponse(authService.login(request));
-
 export const register = request => handleAuthResponse(authService.registration(request));
 
 export const logout = () => {
   setToken('');
-  return ({
-    type: USER_LOGOUT
-  });
+  return ({ type: USER_LOGOUT });
 };
 
 // export const loadCurrentUser = () => async dispatch => {
 //   const user = await authService.getCurrentUser();
 //   dispatch(setUser(user));
 
+export const saveUser = user => async dispatch => {
+  dispatch(userLoading());
+  try {
+    await userService.save(user);
+  } catch (err) {
+    dispatch(userRejected(err));
+  }
+  dispatch(setUser(user));
+};

@@ -55,12 +55,10 @@ const Thread = ({
     setSharedPostId(id);
   };
 
-  const uploadImage = file => imageService.uploadImage(file);
-
   return (
     <div className={styles.threadContent}>
       <div className={styles.addPostForm}>
-        <AddPost addPost={createPost} uploadImage={uploadImage} />
+        <AddPost addPost={createPost} />
       </div>
       <div className={styles.toolbar}>
         <Checkbox

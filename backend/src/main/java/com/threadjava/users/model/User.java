@@ -25,4 +25,5 @@ public class User extends BaseEntity {
     @ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "avatar_id")
     private Image avatar;
+
 }

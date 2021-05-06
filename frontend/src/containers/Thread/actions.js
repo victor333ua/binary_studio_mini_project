@@ -43,7 +43,7 @@ export const applyPost = postId => async dispatch => {
 };
 
 export const addPost = post => async dispatch => {
-  const { id } = await postService.addPost(post);
+  const id = await postService.addPost(post);
   const newPost = await postService.getPost(id);
   dispatch(addPostAction(newPost));
 };

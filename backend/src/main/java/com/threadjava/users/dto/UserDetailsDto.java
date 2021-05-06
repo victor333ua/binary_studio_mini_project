@@ -10,4 +10,5 @@ public class UserDetailsDto {
     private String email;
     private String username;
     private ImageDto image;
+    private String password;
 }

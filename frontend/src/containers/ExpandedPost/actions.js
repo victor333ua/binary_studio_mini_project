@@ -14,17 +14,15 @@ export const toggleExpandedPost = postId => async dispatch => {
   dispatch({ type: SET_EXPANDED_POST, post });
 };
 
-export const addComment = request => async dispatch => {
-  const { id } = await commentService.addComment(request);
+export const addComment = ({ postId, body }) => async dispatch => {
+  const { id } = await commentService.addComment({ postId, body });
   const comment = await commentService.getComment(id);
 
-  dispatch({ type: ADD_COMMENT, comment });
+  dispatch({ type: ADD_COMMENT, payload: { postId, comment } });
 };
 
 export const likeComment = (commentId, isLike) => async dispatch => {
   let isNewRecord = await commentService.likeComment(commentId, isLike);
-  // eslint-disable-next-line no-console
-  console.log(isNewRecord);
   if (isNewRecord === undefined) isNewRecord = null;
 
   dispatch({ type: ADD_LIKE_COMMENT, payload: { isNewRecord, commentId, isLike } });

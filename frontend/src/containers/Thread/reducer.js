@@ -64,39 +64,42 @@ export default (state = {}, action) => {
       return { ...state, posts: updatedPosts, expandedPost: exPost };
     }
     case ADD_COMMENT: {
-      const updatedPosts = state.posts.map(post => (post.id !== action.comment.postId
+      const updatedPosts = state.posts.map(post => (post.id !== action.payload.postId
         ? post
         : ({ ...post, commentCount: Number(post.commentCount) + 1 })));
-      let exPost = state.expandedPost;
-      if (exPost) {
-        exPost = {
-          ...exPost,
-          comments: [...(exPost.comments || []), action.comment]
-        };
-      }
-      return { ...state, posts: updatedPosts, expandedPost: exPost };
+
+      const exPost = state.expandedPost;
+      const newExPost = {
+        ...exPost,
+        comments: [...(exPost.comments || []), action.payload.comment],
+        commentCount: Number(exPost.commentCount) + 1
+      };
+
+      return { ...state, posts: updatedPosts, expandedPost: newExPost };
     }
     case ADD_LIKE_COMMENT: {
-      let exPost = state.expandedPost;
+      const exPost = state.expandedPost;
       const { commentId, isLike, isNewRecord } = action.payload;
       const newComments = exPost.comments.map(c => (c.id !== commentId ? c : addLike(c, isLike, isNewRecord)));
-      exPost = { ...exPost, comments: newComments };
-      return { ...state, expandedPost: exPost };
+      return { ...state, expandedPost: { ...exPost, comments: newComments } };
     }
     case UPDATE_COMMENT: {
-      let exPost = state.expandedPost;
+      const exPost = state.expandedPost;
       const { id, body } = action.comment;
       const newComments = exPost.comments.map(c => (c.id !== id ? c : { ...c, body }));
-      exPost = { ...exPost, comments: newComments };
-      return { ...state, expandedPost: exPost };
+      return { ...state, expandedPost: { ...exPost, comments: newComments } };
     }
     case DELETE_COMMENT: {
-      let exPost = state.expandedPost;
+      const exPost = state.expandedPost;
       const newComments = [...exPost.comments];
       const index = newComments.findIndex(comment => comment.id === action.id);
       newComments.splice(index, 1);
-      exPost = { ...exPost, comments: newComments };
-      return { ...state, expandedPost: exPost };
+      return { ...state,
+        expandedPost: {
+          ...exPost,
+          comments: newComments,
+          commentCount: Number(exPost.commentCount) - 1
+        } };
     }
     default:
       return state;

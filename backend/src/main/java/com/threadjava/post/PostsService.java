@@ -25,25 +25,25 @@ public class PostsService {
         return postsCrudRepository
                 .findAllPosts(userId, pageable)
                 .stream()
-                .map(PostMapper.MAPPER::postListToPostListDto)
+                .map(PostMapper.MAPPER::queryPostListToPostListDto)
                 .collect(Collectors.toList());
     }
 
     public PostDetailsDto getPostById(UUID id) {
         var post = postsCrudRepository.findPostById(id)
-                .map(PostMapper.MAPPER::postToPostDetailsDto)
+                .map(PostMapper.MAPPER::queryPostToPostDetailsDto)
                 .orElseThrow();
 
-        var comments = commentService.getCommentsByPostId(id);
+        var comments = commentService.getCommentsDetailsWithLikesByPostId(id);
         post.setComments(comments);
 
         return post;
     }
 
-    public PostCreationResponseDto create(PostCreationDto postDto) {
-        Post post = PostMapper.MAPPER.postDetailsDtoToPost(postDto);
+    public UUID create(PostCreationDto postDto) {
+        Post post = PostMapper.MAPPER.postCreationDtoToPost(postDto);
         Post postCreated = postsCrudRepository.save(post);
-        return PostMapper.MAPPER.postToPostCreationResponseDto(postCreated);
+        return postCreated.getId();
     }
     @Transactional
     public void delete (UUID id) {
@@ -51,9 +51,7 @@ public class PostsService {
     }
 
     public void update(PostUpdateDto postUpdateDto) {
-        var post = postsCrudRepository.findById(postUpdateDto.getId())
-                .orElseThrow();
-        post.setBody(postUpdateDto.getBody());
+        var post = PostMapper.MAPPER.postUpdateDtoToPost(postUpdateDto);
         postsCrudRepository.save(post);
     }
 }

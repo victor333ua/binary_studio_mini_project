@@ -15,7 +15,8 @@ export const addPost = async request => {
     type: 'POST',
     request
   });
-  return response.json();
+  // server returns UUID
+  return response.text();
 };
 
 export const getPost = async id => {
@@ -44,17 +45,13 @@ export const deletePost = async postId => {
     endpoint: `/api/posts/${postId}`,
     type: 'DELETE'
   });
-  // return response.json();
 };
 
 export const editPost = async post => {
   await callWebApi({
     endpoint: '/api/posts',
     type: 'PUT',
-    request: {
-      id: post.id,
-      body: post.body
-    }
+    request: post
   });
 };
 

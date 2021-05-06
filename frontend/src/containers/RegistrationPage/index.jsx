@@ -17,7 +17,7 @@ const RegistrationPage = ({ register: signOn }) => (
       </Header>
       <RegistrationForm register={signOn} />
       <Message>
-        Alredy with us?
+        Already with us?
         {' '}
         <NavLink exact to="/login">Sign In</NavLink>
       </Message>

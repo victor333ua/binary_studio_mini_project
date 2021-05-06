@@ -20,12 +20,12 @@ public interface CommentRepository extends JpaRepository<Comment, UUID> {
             "from Comment c " +
             "where (c.post.id = :postId and c.deleted = false) " +
             "order by c.createdAt desc" )
-    List<CommentDetailsQueryResult> findAllCommentsDetailsByPostId(@Param("postId") UUID postId);
+    List<CommentDetailsQueryResult> findAllCommentsDetailsWithLikesByPostId(@Param("postId") UUID postId);
 
     @Query("select new com.threadjava.comment.dto.CommentDetailsQueryResult(c.id, c.body, c.user, c.createdAt, " +
             "(select count(*) from CommentReaction cr where cr.comment = c and cr.isLike = true), " +
             "(select count(*) from CommentReaction cr where cr.comment = c and cr.isLike = false)) " +
             "from Comment c " +
             "where (c.id = :id and c.deleted = false) ")
-    Optional<CommentDetailsQueryResult> findCommentsDetailsById(@Param("id") UUID id);
+    Optional<CommentDetailsQueryResult> findCommentsDetailsWithLikesById(@Param("id") UUID id);
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Comment as CommentUI, Form, Icon } from 'semantic-ui-react';
+import { Button, Comment as CommentUI, Form, Icon } from 'semantic-ui-react';
 import moment from 'moment';
 import { getUserImgLink } from 'src/helpers/imageHelper';
 
@@ -23,17 +23,19 @@ const Comment = (
   const [isEditMode, setEditMode] = useState(false);
 
   const onCloseDeleteDialog = () => setDeleteDialog(false);
-  const onDelete = () => {
-    deleteComment(id);
+  const onDelete = async () => {
+    await deleteComment(id);
     setDeleteDialog(false);
   };
-  const onUpdateComment = () => updateComment({ id, body: text });
+  const onUpdateComment = async () => {
+    await updateComment({ id, body: text });
+    setEditMode(false);
+  };
 
   return (
     <>
-      <DeleteDialog open={openDeleteDialog} header="Delete Comment" onClose={onCloseDeleteDialog} onDelete={onDelete} />
       <CommentUI className={styles.comment}>
-        <CommentUI.Avatar src={getUserImgLink(user.image)}/>
+        <CommentUI.Avatar src={getUserImgLink(user.image).link}/>
         <CommentUI.Content>
           <CommentUI.Author as="a">
             {user.username}
@@ -42,20 +44,7 @@ const Comment = (
             {moment(createdAt).fromNow()}
           </CommentUI.Metadata>
           <CommentUI.Text>
-            {!isEditMode ? text
-              : (
-                <Form>
-                  <Form.Field
-                    control={TextareaAutosize}
-                    onChange={e => setText(e.target.value)}
-                    value={text}
-                  />
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Form.Button content="Save" onClick={() => onUpdateComment()}/>
-                    <Form.Button content="Cancel" onClick={() => setEditMode(false)}/>
-                  </div>
-                </Form>
-              )}
+            {!isEditMode && text}
           </CommentUI.Text>
           <CommentUI.Actions>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -69,6 +58,12 @@ const Comment = (
                   {dislikeCount}
                 </CommentUI.Action>
               </div>
+              <DeleteDialog
+                open={openDeleteDialog}
+                header="Delete Comment"
+                onClose={onCloseDeleteDialog}
+                onDelete={onDelete}
+              />
               {isMineComment
               && (
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -82,6 +77,17 @@ const Comment = (
               )}
             </div>
           </CommentUI.Actions>
+          {isEditMode && (
+            <Form edit comment>
+              <Form.Field
+                control={TextareaAutosize}
+                onChange={e => setText(e.target.value)}
+                value={text}
+              />
+              <Button content="Cancel" floated="right" type="button" onClick={() => setEditMode(false)}/>
+              <Button content="Save" floated="right" onClick={() => onUpdateComment()}/>
+            </Form>
+          )}
         </CommentUI.Content>
       </CommentUI>
     </>

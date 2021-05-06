@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Card, Image, Label, Icon, Form } from 'semantic-ui-react';
+import { Card, Image, Label, Icon, Form, Message, Button } from 'semantic-ui-react';
 import TextareaAutosize from 'react-textarea-autosize';
 import moment from 'moment';
 
 import styles from './styles.module.scss';
 import { DeleteDialog } from '../DeleteDialog';
+import * as imageService from '../../services/imageService';
 
 const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePost, updatePost }) => {
   const {
@@ -24,7 +25,10 @@ const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePos
 
   const [text, setText] = useState(body);
   const [isEdit, setEdit] = useState(false);
+  const [editImage, setEditImage] = useState(image);
   const [openDeleteDialog, setDeleteDialog] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [errorUploadingImage, setErrorUploading] = useState(null);
 
   const onDeletePost = () => {
     setDeleteDialog(false);
@@ -32,8 +36,21 @@ const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePos
   };
   const onCloseDeleteDialog = () => setDeleteDialog(false);
 
+  const handleUploadFile = async ({ target }) => {
+    setIsUploading(true);
+    try {
+      const { id: idImage, link } = await imageService.uploadImage(target.files[0]);
+      setEditImage({ id: idImage, link });
+    } catch (err) {
+      setErrorUploading(err.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const onUpdatePost = () => {
-    updatePost({ ...post, body: text });
+    const postImage = image?.id === editImage?.id ? image : editImage;
+    updatePost({ id: post.id, createdAt: post.createdAt, user: post.user, body: text, image: postImage });
     setEdit(false);
   };
 
@@ -41,7 +58,7 @@ const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePos
     <>
       <DeleteDialog open={openDeleteDialog} header="Delete Post" onClose={onCloseDeleteDialog} onDelete={onDeletePost}/>
       <Card style={{ width: '100%' }}>
-        {image && <Image src={image.link} wrapped ui={false} />}
+        {editImage && <Image src={editImage.link} wrapped ui={false} />}
         <Card.Content>
           <Card.Meta>
             <span className="date">
@@ -55,16 +72,24 @@ const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePos
           <Card.Description>
             {!isEdit ? text
               : (
-                <Form>
+                <Form error={Boolean(errorUploadingImage)}>
                   <Form.Field
                     control={TextareaAutosize}
                     onChange={e => setText(e.target.value)}
                     value={text}
                   />
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Form.Button content="Save" onClick={() => onUpdatePost()}/>
-                    <Form.Button content="Cancel" onClick={() => setEdit(false)}/>
-                  </div>
+                  <Message
+                    error
+                    header="Upload Image to Imgur - Server error"
+                    content={errorUploadingImage}
+                  />
+                  <Button content="Cancel" floated="right" onClick={() => setEdit(false)}/>
+                  <Button content="Save" floated="right" onClick={() => onUpdatePost()}/>
+                  <Button as="label" icon labelPosition="left" floated="left" loading={isUploading}>
+                    <Icon name="image" />
+                    Attach/change image
+                    <input name="image" type="file" onChange={handleUploadFile} hidden />
+                  </Button>
                 </Form>
               )}
           </Card.Description>

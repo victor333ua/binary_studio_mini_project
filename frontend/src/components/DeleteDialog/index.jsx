@@ -3,7 +3,7 @@ import { Button, Header, Icon, Modal } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 
 export const DeleteDialog = ({ open, header, onClose, onDelete }) => (
-  <Modal open={open} size="tiny" >
+  <Modal open={open} size="tiny" closeIcon >
     <Header>
       {header}
     </Header>

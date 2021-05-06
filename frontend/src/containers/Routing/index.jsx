@@ -1,5 +1,4 @@
 import React from 'react';
-// import { useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -15,7 +14,6 @@ import PrivateRoute from 'src/containers/PrivateRoute';
 import PublicRoute from 'src/containers/PublicRoute';
 import Notifications from 'src/components/Notifications';
 import { logout } from 'src/containers/Profile/actions';
-// import { loadCurrentUser } from 'src/containers/Profile/actions';
 import { applyPost } from 'src/containers/Thread/actions';
 import PropTypes from 'prop-types';
 
@@ -24,39 +22,27 @@ const Routing = ({
   isAuthorized,
   applyPost: newPost,
   logout: signOut
-  // loadCurrentUser: loadUser,
-  // isLoading
-}) =>
-  // useEffect(() => {
-  //   if (!isAuthorized) {
-  //     loadUser();
-  //   }
-  // });
-  // eslint-disable-next-line implicit-arrow-linebreak
-  (
-    // isLoading
-    //   ? <Spinner/>
-    //   : (
-    <div className="fill">
-      {isAuthorized && (
-        <header>
-          <Header user={user} logout={signOut}/>
-        </header>
-      )}
-      <main className="fill">
-        <Switch>
-          <Route exact path="/login" component={LoginPage} />
-          <PublicRoute exact path="/registration" component={RegistrationPage}/>
-          <PrivateRoute exact path="/" component={Thread}/>
-          <PrivateRoute exact path="/profile" component={Profile}/>
-          <PrivateRoute path="/share/:postHash" component={SharedPost}/>
-          <Route path="*" exact component={NotFound}/>
-        </Switch>
-      </main>
-      <Notifications applyPost={newPost} user={user}/>
-    </div>
-    // )
-  );
+}) => (
+  <div className="fill">
+    {isAuthorized && (
+      <header>
+        <Header user={user} logout={signOut}/>
+      </header>
+    )}
+    <main className="fill">
+      <Switch>
+        <Route exact path="/login" component={LoginPage} />
+        <PublicRoute exact path="/registration" component={RegistrationPage}/>
+        <PrivateRoute exact path="/" component={Thread}/>
+        <PrivateRoute exact path="/profile" component={Profile}/>
+        <PrivateRoute path="/share/:postHash" component={SharedPost}/>
+        <Route path="*" exact component={NotFound}/>
+      </Switch>
+    </main>
+    <Notifications applyPost={newPost} user={user}/>
+  </div>
+);
+
 Routing.propTypes = {
   isAuthorized: PropTypes.bool,
   logout: PropTypes.func.isRequired,

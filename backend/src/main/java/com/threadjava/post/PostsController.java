@@ -32,11 +32,11 @@ public class PostsController {
     }
 
     @PostMapping
-    public PostCreationResponseDto post(@RequestBody PostCreationDto postDto) {
+    public String post(@RequestBody PostCreationDto postDto) {
         postDto.setUserId(getUserId());
-        var item = postsService.create(postDto);
-        template.convertAndSend("/topic/new_post", item);
-        return item;
+        var uuid = postsService.create(postDto);
+//        template.convertAndSend("/topic/new_post", item);
+        return uuid.toString();
     }
     @DeleteMapping("/{postId}")
     public void delete(@PathVariable UUID postId) {

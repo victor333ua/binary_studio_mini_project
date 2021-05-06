@@ -13,7 +13,7 @@ const Header = ({ user, logout }) => (
         {user && (
           <NavLink exact to="/">
             <HeaderUI>
-              <Image circular src={getUserImgLink(user.image)} />
+              <Image circular src={getUserImgLink(user.image.link)} />
               {' '}
               {user.username}
             </HeaderUI>

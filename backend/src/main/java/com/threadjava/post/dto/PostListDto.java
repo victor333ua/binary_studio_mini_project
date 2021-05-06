@@ -1,7 +1,7 @@
 package com.threadjava.post.dto;
 
 import com.threadjava.image.dto.ImageDto;
-import com.threadjava.users.dto.UserDetailsDto;
+import com.threadjava.users.dto.UserShortDto;
 import lombok.Data;
 import java.util.Date;
 import java.util.UUID;
@@ -15,5 +15,5 @@ public class PostListDto {
     private long commentCount;
     private Date createdAt;
     private ImageDto image;
-    private UserDetailsDto user;
+    private UserShortDto user;
 }

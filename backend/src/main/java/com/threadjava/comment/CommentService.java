@@ -32,17 +32,17 @@ public class CommentService {
         return CommentMapper.MAPPER.commentToCommentDetailsDto(postCreated);
     }
 
-    public List<CommentDetailsWithLikesDto> getCommentsByPostId(UUID postId) {
-        return commentRepository.findAllCommentsDetailsByPostId(postId)
+    public List<CommentDetailsWithLikesDto> getCommentsDetailsWithLikesByPostId(UUID postId) {
+        return commentRepository.findAllCommentsDetailsWithLikesByPostId(postId)
                 .stream()
-                .map(CommentMapper.MAPPER::commentToCommentDto)
+                .map(CommentMapper.MAPPER::commentToCommentDetaisWithLikesDto)
                 .collect(Collectors.toList());
     }
 
-    public CommentDetailsWithLikesDto getCommentDetailsById(UUID id) {
-        var comment = commentRepository.findCommentsDetailsById(id)
+    public CommentDetailsWithLikesDto getCommentDetailsWithLikesById(UUID id) {
+        var comment = commentRepository.findCommentsDetailsWithLikesById(id)
                 .orElseThrow();
-        return CommentMapper.MAPPER.commentToCommentDto(comment);
+        return CommentMapper.MAPPER.commentToCommentDetaisWithLikesDto(comment);
     }
 
     public void update(CommentUpdateDto commentDto) {

@@ -5,13 +5,15 @@ import com.threadjava.comment.dto.CommentDetailsQueryResult;
 import com.threadjava.comment.dto.CommentDetailsWithLikesDto;
 import com.threadjava.comment.dto.CommentSaveDto;
 import com.threadjava.comment.model.Comment;
+import com.threadjava.users.UserMapper;
 import com.threadjava.users.dto.UserDetailsDto;
+import com.threadjava.users.dto.UserShortDto;
 import com.threadjava.users.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(uses={UserMapper.class})
 public interface CommentMapper {
     CommentMapper MAPPER = Mappers.getMapper(CommentMapper.class);
 
@@ -25,8 +27,8 @@ public interface CommentMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Comment commentSaveDtoToModel(CommentSaveDto commentDto);
 
-    CommentDetailsWithLikesDto commentToCommentDto(CommentDetailsQueryResult comment);
+    CommentDetailsWithLikesDto commentToCommentDetaisWithLikesDto(CommentDetailsQueryResult comment);
 
-    @Mapping(source = "avatar", target = "image")
-    UserDetailsDto postUserToPostUserDto(User model);
+//    @Mapping(source = "avatar", target = "image")
+//    default UserShortDto userToUserShortDto(User model);
 }

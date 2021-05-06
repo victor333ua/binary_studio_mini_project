@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import validator from 'validator';
-import { Form, Button, Segment } from 'semantic-ui-react';
+import { Form, Button, Segment, Message } from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
@@ -17,13 +17,21 @@ const LoginForm = ({
   const [password, setPassword] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [isShowPassword, setShowPassword] = useState(false);
 
-  if (status === 'completed') {
-    const from = location.state?.from || { pathname: '/' };
-    return <Redirect to={from} />;
-    // в данном случае это не обязательно, т.к. перерисовка главного экрана происходит
-    // из-за обертки PublicRoute
+  if (status === 'completed') { // или можно воспольз. isAuthorized
+    const oldLocation = location.state?.from || { pathname: '/' };
+    return <Redirect to={oldLocation} />;
+    // в данном случае это не обязательно, т.к. PublicRoute
   }
+
+  const iconName = isShowPassword ? 'eye slash' : 'eye';
+  const passwordType = isShowPassword ? 'text' : 'password';
+
+  const changeVisibility = e => {
+    setShowPassword(!isShowPassword);
+    e.preventDefault();
+  };
 
   const emailChanged = data => {
     setEmail(data);
@@ -41,12 +49,10 @@ const LoginForm = ({
 
     logIn({ email, password });
     // error captured in action & changed the state
-    // eslint-disable-next-line no-console
-    // .catch(err => console.log(err));
   };
 
   return (
-    <Form name="loginForm" size="large" onSubmit={handleLoginClick}>
+    <Form name="loginForm" size="large" error={Boolean(error)} onSubmit={handleLoginClick}>
       <Segment>
         <Form.Input
           fluid
@@ -58,18 +64,29 @@ const LoginForm = ({
           onChange={ev => emailChanged(ev.target.value)}
           onBlur={() => setIsEmailValid(validator.isEmail(email))}
         />
-        {status === 'error' && <div>{error}</div>}
+        <Message
+          error
+          header="Server error"
+          content={error}
+        />
         <Form.Input
           fluid
-          icon="lock"
-          iconPosition="left"
           placeholder="Password"
-          type="password"
+          type={passwordType}
           error={!isPasswordValid}
           onChange={ev => passwordChanged(ev.target.value)}
           onBlur={() => setIsPasswordValid(Boolean(password))}
+          action={{ icon: iconName, type: 'button', onClick: e => changeVisibility(e) }}
         />
-        <Button type="submit" color="teal" fluid size="large" loading={status === 'loading'} primary>
+        <Button
+          // onClick={handleLoginClick}
+          type="submit"
+          color="teal"
+          fluid
+          size="large"
+          loading={status === 'loading'}
+          primary
+        >
           Login
         </Button>
       </Segment>
