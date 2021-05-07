@@ -20,10 +20,16 @@ public class PostsService {
     @Autowired
     private CommentService commentService;
 
-    public List<PostListDto> getAllPosts(Integer from, Integer count, UUID userId) {
+    public List<PostListDto> getAllPosts(Integer from, Integer count, UUID userId, Boolean isMine) {
         var pageable = PageRequest.of(from / count, count);
-        return postsCrudRepository
-                .findAllPosts(userId, pageable)
+        List<PostListQueryResult> list;
+        if(userId == null) list = postsCrudRepository.getAllPostsMyOrNot(from, count, userId, isMine);
+        else {
+            if(isMine == null)  list = postsCrudRepository.findAllPostsWithMyLikes(userId, pageable);
+            else
+                list = postsCrudRepository.getAllPostsMyOrNot(from, count, userId, isMine);
+        }
+        return list
                 .stream()
                 .map(PostMapper.MAPPER::queryPostListToPostListDto)
                 .collect(Collectors.toList());

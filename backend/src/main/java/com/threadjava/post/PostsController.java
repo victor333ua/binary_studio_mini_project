@@ -22,8 +22,9 @@ public class PostsController {
     @GetMapping
     public List<PostListDto> get(@RequestParam(defaultValue="0") Integer from,
                                  @RequestParam(defaultValue="10") Integer count,
-                                 @RequestParam(required = false) UUID userId) {
-        return postsService.getAllPosts(from, count, userId);
+                                 @RequestParam(required = false) UUID userId,
+                                 @RequestParam(required = false) Boolean isMine) {
+        return postsService.getAllPosts(from, count, userId, isMine);
     }
 
     @GetMapping("/{id}")

@@ -25,13 +25,12 @@ public class CommentReactionService {
                 return Optional.empty();// delete record in case of double usage
             } else {
                 react.setIsLike(commentReactionDto.getIsLike());
-                var result = commentReactionsRepository.save(react);
-                //
+                commentReactionsRepository.save(react);
                 return Optional.of(false); // update record w/o create new
             }
         } else {
             var postReaction = CommentReactionMapper.MAPPER.dtoToCommentReaction(commentReactionDto);
-            var result = commentReactionsRepository.save(postReaction);
+            commentReactionsRepository.save(postReaction);
             return Optional.of(true); // create new
         }
     }

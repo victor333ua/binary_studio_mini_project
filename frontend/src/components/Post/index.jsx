@@ -83,8 +83,8 @@ const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePos
                     header="Upload Image to Imgur - Server error"
                     content={errorUploadingImage}
                   />
-                  <Button content="Cancel" floated="right" onClick={() => setEdit(false)}/>
-                  <Button content="Save" floated="right" onClick={() => onUpdatePost()}/>
+                  <Button content="Cancel" floated="right" onClick={() => setEdit(false)} secondary/>
+                  <Button content="Save" floated="right" onClick={() => onUpdatePost()} primary/>
                   <Button as="label" icon labelPosition="left" floated="left" loading={isUploading}>
                     <Icon name="image" />
                     Attach/change image

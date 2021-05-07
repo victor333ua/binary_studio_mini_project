@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import * as imageService from 'src/services/imageService';
 import ExpandedPost from 'src/containers/ExpandedPost';
 import Post from 'src/components/Post';
 import AddPost from 'src/components/AddPost';
@@ -17,6 +16,7 @@ import styles from './styles.module.scss';
 
 const postsFilter = {
   userId: undefined,
+  isMine: undefined,
   from: 0,
   count: 10
 };
@@ -36,10 +36,38 @@ const Thread = ({
 }) => {
   const [sharedPostId, setSharedPostId] = useState(undefined);
   const [showOwnPosts, setShowOwnPosts] = useState(false);
+  const [showAnothersPosts, setShowAnothersPosts] = useState(false);
+  const [showPostsWithMyLikes, setShowPostsWithMyLikes] = useState(false);
 
   const toggleShowOwnPosts = () => {
     setShowOwnPosts(!showOwnPosts);
+    setShowAnothersPosts(false);
+    setShowPostsWithMyLikes(false);
+    // we have old value of showOwnPosts here yet
     postsFilter.userId = showOwnPosts ? undefined : userId;
+    postsFilter.isMine = true;
+    postsFilter.from = 0;
+    load(postsFilter);
+    postsFilter.from = postsFilter.count; // for the next scroll
+  };
+
+  const toggleShowAnothersPosts = () => {
+    setShowAnothersPosts(!showAnothersPosts);
+    setShowPostsWithMyLikes(false);
+    setShowOwnPosts(false);
+    postsFilter.userId = showAnothersPosts ? undefined : userId;
+    postsFilter.isMine = false;
+    postsFilter.from = 0;
+    load(postsFilter);
+    postsFilter.from = postsFilter.count; // for the next scroll
+  };
+
+  const toggleShowPostsWithMyLikes = () => {
+    setShowPostsWithMyLikes(!showPostsWithMyLikes);
+    setShowAnothersPosts(false);
+    setShowOwnPosts(false);
+    postsFilter.userId = showPostsWithMyLikes ? undefined : userId;
+    postsFilter.isMine = undefined;
     postsFilter.from = 0;
     load(postsFilter);
     postsFilter.from = postsFilter.count; // for the next scroll
@@ -60,6 +88,7 @@ const Thread = ({
       <div className={styles.addPostForm}>
         <AddPost addPost={createPost} />
       </div>
+
       <div className={styles.toolbar}>
         <Checkbox
           toggle
@@ -67,7 +96,20 @@ const Thread = ({
           checked={showOwnPosts}
           onChange={toggleShowOwnPosts}
         />
+        <Checkbox
+          toggle
+          label="Show only another's posts"
+          checked={showAnothersPosts}
+          onChange={toggleShowAnothersPosts}
+        />
+        <Checkbox
+          toggle
+          label="Show only posts with my likes"
+          checked={showPostsWithMyLikes}
+          onChange={toggleShowPostsWithMyLikes}
+        />
       </div>
+
       <InfiniteScroll
         pageStart={0}
         loadMore={getMorePosts}
