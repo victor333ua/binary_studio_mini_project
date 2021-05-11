@@ -1,12 +1,9 @@
 package com.threadjava.comment;
 
 import com.threadjava.comment.dto.CommentDetailsDto;
-import com.threadjava.comment.dto.CommentDetailsWithLikesDto;
 import com.threadjava.comment.dto.CommentSaveDto;
 import com.threadjava.comment.dto.CommentUpdateDto;
-import com.threadjava.post.PostMapper;
-import com.threadjava.post.PostsRepository;
-import com.threadjava.users.UsersRepository;
+import com.threadjava.commentReactions.CommentReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,30 +16,34 @@ import java.util.stream.Collectors;
 public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private CommentReactionService commentReactionsService;
 
-    public CommentDetailsDto getCommentById(UUID id) {
-        return commentRepository.findById(id)
-                .map(CommentMapper.MAPPER::commentToCommentDetailsDto)
-                .orElseThrow();
-    }
-
-    public CommentDetailsDto create(CommentSaveDto commentDto) {
+    public String create(CommentSaveDto commentDto) {
         var comment = CommentMapper.MAPPER.commentSaveDtoToModel(commentDto);
-        var postCreated = commentRepository.save(comment);
-        return CommentMapper.MAPPER.commentToCommentDetailsDto(postCreated);
+        var commentCreated = commentRepository.save(comment);
+        return commentCreated.getId().toString();
     }
 
-    public List<CommentDetailsWithLikesDto> getCommentsDetailsWithLikesByPostId(UUID postId) {
-        return commentRepository.findAllCommentsDetailsWithLikesByPostId(postId)
+    public List<CommentDetailsDto> getAllCommentDetailsByPostId(UUID postId) {
+        return commentRepository.findAllCommentDetailsByPostId(postId)
                 .stream()
-                .map(CommentMapper.MAPPER::commentToCommentDetaisWithLikesDto)
+                .map(queryComment -> {
+                    var commentDto = CommentMapper.MAPPER.queryCommentToCommentDetaisDto(queryComment);
+                    var reactionsDto = commentReactionsService.getCommentReactionsByCommentId(queryComment.getId());
+                    commentDto.setReactions(reactionsDto);
+                    return commentDto;
+                })
                 .collect(Collectors.toList());
     }
 
-    public CommentDetailsWithLikesDto getCommentDetailsWithLikesById(UUID id) {
-        var comment = commentRepository.findCommentsDetailsWithLikesById(id)
+    public CommentDetailsDto getCommentDetailsById(UUID id) {
+        var queryComment = commentRepository.findCommentDetailsById(id)
                 .orElseThrow();
-        return CommentMapper.MAPPER.commentToCommentDetaisWithLikesDto(comment);
+        var commentDto = CommentMapper.MAPPER.queryCommentToCommentDetaisDto(queryComment);
+        var reactionsDto = commentReactionsService.getCommentReactionsByCommentId(id);
+        commentDto.setReactions(reactionsDto);
+        return commentDto;
     }
 
     public void update(CommentUpdateDto commentDto) {

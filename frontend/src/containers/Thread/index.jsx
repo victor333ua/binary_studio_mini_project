@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -22,7 +22,7 @@ const postsFilter = {
 };
 
 const Thread = ({
-  userId,
+  user,
   loadPosts: load,
   loadMorePosts: loadMore,
   posts = [],
@@ -44,7 +44,7 @@ const Thread = ({
     setShowAnothersPosts(false);
     setShowPostsWithMyLikes(false);
     // we have old value of showOwnPosts here yet
-    postsFilter.userId = showOwnPosts ? undefined : userId;
+    postsFilter.userId = showOwnPosts ? undefined : user.id;
     postsFilter.isMine = true;
     postsFilter.from = 0;
     load(postsFilter);
@@ -55,7 +55,7 @@ const Thread = ({
     setShowAnothersPosts(!showAnothersPosts);
     setShowPostsWithMyLikes(false);
     setShowOwnPosts(false);
-    postsFilter.userId = showAnothersPosts ? undefined : userId;
+    postsFilter.userId = showAnothersPosts ? undefined : user.id;
     postsFilter.isMine = false;
     postsFilter.from = 0;
     load(postsFilter);
@@ -66,7 +66,7 @@ const Thread = ({
     setShowPostsWithMyLikes(!showPostsWithMyLikes);
     setShowAnothersPosts(false);
     setShowOwnPosts(false);
-    postsFilter.userId = showPostsWithMyLikes ? undefined : userId;
+    postsFilter.userId = showPostsWithMyLikes ? undefined : user.id;
     postsFilter.isMine = undefined;
     postsFilter.from = 0;
     load(postsFilter);
@@ -118,7 +118,7 @@ const Thread = ({
       >
         {posts.map(post => (
           <Post
-            userId={userId}
+            user={user}
             post={post}
             likePost={like}
             toggleExpandedPost={toggle}
@@ -139,7 +139,7 @@ Thread.propTypes = {
   posts: PropTypes.arrayOf(PropTypes.object),
   hasMorePosts: PropTypes.bool,
   expandedPost: PropTypes.objectOf(PropTypes.any),
-  userId: PropTypes.string,
+  user: PropTypes.objectOf(PropTypes.any),
   loadPosts: PropTypes.func.isRequired,
   loadMorePosts: PropTypes.func.isRequired,
   likePost: PropTypes.func.isRequired,
@@ -153,14 +153,14 @@ Thread.defaultProps = {
   posts: [],
   hasMorePosts: true,
   expandedPost: undefined,
-  userId: undefined
+  user: {}
 };
 
 const mapStateToProps = rootState => ({
   posts: rootState.posts.posts,
   hasMorePosts: rootState.posts.hasMorePosts,
   expandedPost: rootState.posts.expandedPost,
-  userId: rootState.profile.user.id
+  user: rootState.profile.user
 });
 
 const actions = {

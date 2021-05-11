@@ -12,7 +12,7 @@ import Spinner from 'src/components/Spinner';
 import { toggleExpandedPost, addComment, likeComment, updateComment, deleteComment } from './actions';
 
 const ExpandedPost = ({
-  userId,
+  user: currentUser,
   post,
   sharePost,
   likePost: like,
@@ -24,12 +24,12 @@ const ExpandedPost = ({
   updateComment: updateCom,
   deleteComment: deleteCom
 }) => (
-  <Modal dimmer="blurring" centered={false} open onClose={() => toggle()}>
+  <Modal centered={false} open onClose={() => toggle()}>
     {post
       ? (
         <Modal.Content>
           <Post
-            userId={userId}
+            user={currentUser}
             post={post}
             likePost={like}
             toggleExpandedPost={toggle}
@@ -46,7 +46,7 @@ const ExpandedPost = ({
               .map(comment => (
                 <Comment
                   key={comment.id}
-                  userId={userId}
+                  user={currentUser}
                   comment={comment}
                   likeComment={likeCom}
                   updateComment={updateCom}
@@ -62,7 +62,7 @@ const ExpandedPost = ({
 );
 
 ExpandedPost.propTypes = {
-  userId: PropTypes.string.isRequired,
+  user: PropTypes.objectOf(PropTypes.any).isRequired,
   post: PropTypes.objectOf(PropTypes.any).isRequired,
   toggleExpandedPost: PropTypes.func.isRequired,
   likePost: PropTypes.func.isRequired,
@@ -77,7 +77,7 @@ ExpandedPost.propTypes = {
 
 const mapStateToProps = rootState => ({
   post: rootState.posts.expandedPost,
-  userId: rootState.profile.user.id
+  user: rootState.profile.user
 });
 
 // eslint-disable-next-line max-len

@@ -57,10 +57,13 @@ export default (state = {}, action) => {
       return { ...state, posts: updatedPosts };
     }
     case ADD_LIKE: {
-      const { postId, isLike, isNewRecord } = action.payload;
-      const updatedPosts = state.posts.map(post => (post.id !== postId ? post : addLike(post, isLike, isNewRecord)));
+      const { postId, isLike, isNewRecord, currentUser } = action.payload;
+      const updatedPosts = state.posts.map(post => (post.id !== postId
+        ? post
+        : addLike(post, isLike, isNewRecord, currentUser)
+      ));
       let exPost = state.expandedPost;
-      if (exPost && exPost.id === postId) exPost = addLike(exPost, isLike, isNewRecord);
+      if (exPost && exPost.id === postId) exPost = addLike(exPost, isLike, isNewRecord, currentUser);
       return { ...state, posts: updatedPosts, expandedPost: exPost };
     }
     case ADD_COMMENT: {
@@ -79,8 +82,11 @@ export default (state = {}, action) => {
     }
     case ADD_LIKE_COMMENT: {
       const exPost = state.expandedPost;
-      const { commentId, isLike, isNewRecord } = action.payload;
-      const newComments = exPost.comments.map(c => (c.id !== commentId ? c : addLike(c, isLike, isNewRecord)));
+      const { commentId, isLike, isNewRecord, currentUser } = action.payload;
+      const newComments = exPost.comments
+        .map(c => (c.id !== commentId
+          ? c
+          : addLike(c, isLike, isNewRecord, currentUser)));
       return { ...state, expandedPost: { ...exPost, comments: newComments } };
     }
     case UPDATE_COMMENT: {

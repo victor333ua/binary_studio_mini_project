@@ -4,6 +4,7 @@ import com.threadjava.comment.CommentRepository;
 import com.threadjava.comment.CommentService;
 import com.threadjava.post.dto.*;
 import com.threadjava.post.model.Post;
+import com.threadjava.postReactions.PostReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,14 @@ public class PostsService {
     private PostsRepository postsCrudRepository;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private PostReactionService postReactionService;
 
-    public List<PostListDto> getAllPosts(Integer from, Integer count, UUID userId, Boolean isMine) {
+    public List<PostDetailsDto> getAllPosts(Integer from, Integer count, UUID userId, Boolean isMine) {
+
         var pageable = PageRequest.of(from / count, count);
-        List<PostListQueryResult> list;
+        List<PostDetailsQueryResult> list;
+
         if(userId == null) list = postsCrudRepository.getAllPostsMyOrNot(from, count, userId, isMine);
         else {
             if(isMine == null)  list = postsCrudRepository.findAllPostsWithMyLikes(userId, pageable);
@@ -31,7 +36,12 @@ public class PostsService {
         }
         return list
                 .stream()
-                .map(PostMapper.MAPPER::queryPostListToPostListDto)
+                .map(queryPost -> {
+                    var postDetailsDto = PostMapper.MAPPER.queryPostToPostDetailsDto(queryPost);
+                    var reactionsDto = postReactionService.getPostReactionsByPostId(queryPost.getId());
+                    postDetailsDto.setReactions(reactionsDto);
+                    return postDetailsDto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -40,8 +50,11 @@ public class PostsService {
                 .map(PostMapper.MAPPER::queryPostToPostDetailsDto)
                 .orElseThrow();
 
-        var comments = commentService.getCommentsDetailsWithLikesByPostId(id);
+        var comments = commentService.getAllCommentDetailsByPostId(id);
         post.setComments(comments);
+
+        var reactionsDto = postReactionService.getPostReactionsByPostId(id);
+        post.setReactions(reactionsDto);
 
         return post;
     }

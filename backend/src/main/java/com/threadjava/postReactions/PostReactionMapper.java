@@ -1,24 +1,21 @@
 package com.threadjava.postReactions;
 
+import com.threadjava.postReactions.dto.PostReactionCreationDto;
 import com.threadjava.postReactions.dto.PostReactionDto;
-import com.threadjava.postReactions.dto.ResponsePostReactionDto;
+import com.threadjava.postReactions.dto.QueryPostReaction;
 import com.threadjava.postReactions.model.PostReaction;
+import com.threadjava.users.UserMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper (uses = { UserMapper.class })
 public interface PostReactionMapper {
-    PostReactionMapper MAPPER = Mappers.getMapper( PostReactionMapper.class );
+    PostReactionMapper MAPPER = Mappers.getMapper(PostReactionMapper.class);
 
-    @Mapping(source = "post.id", target = "postId")
-    @Mapping(source = "user.id", target = "userId")
-    ResponsePostReactionDto reactionToPostReactionDto(PostReaction postReaction);
+    PostReactionDto queryPostReactionToPostReactionDto(QueryPostReaction queryPostReaction);
 
     @Mapping(source = "userId", target = "user.id")
     @Mapping(source = "postId", target = "post.id")
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    PostReaction dtoToPostReaction(PostReactionDto postReactionDto);
+    PostReaction dtoToPostReaction(PostReactionCreationDto postReactionDto);
 }

@@ -1,12 +1,11 @@
 package com.threadjava.postReactions.dto;
 
+import com.threadjava.users.dto.UserShortDto;
 import lombok.Data;
 import java.util.UUID;
 
 @Data
 public class PostReactionDto {
-    private UUID postId;
-    private UUID postOwnerId;
+    private UserShortDto user;
     private Boolean isLike;
-    private UUID userId;
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Card, Image, Label, Icon, Form, Message, Button } from 'semantic-ui-react';
+import { Card, Image, Label, Icon, Form, Message, Button, Popup } from 'semantic-ui-react';
 import TextareaAutosize from 'react-textarea-autosize';
 import moment from 'moment';
 
@@ -8,7 +8,7 @@ import styles from './styles.module.scss';
 import { DeleteDialog } from '../DeleteDialog';
 import * as imageService from '../../services/imageService';
 
-const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePost, updatePost }) => {
+const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, sharePost, deletePost, updatePost }) => {
   const {
     id,
     image,
@@ -17,11 +17,12 @@ const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePos
     likeCount,
     dislikeCount,
     commentCount,
-    createdAt
+    createdAt,
+    reactions
   } = post;
 
   const date = moment(createdAt).fromNow();
-  const isMinePost = userId === user.id;
+  const isMinePost = currentUser.id === user.id;
 
   const [text, setText] = useState(body);
   const [isEdit, setEdit] = useState(false);
@@ -29,6 +30,10 @@ const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePos
   const [openDeleteDialog, setDeleteDialog] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [errorUploadingImage, setErrorUploading] = useState(null);
+
+  const rArray = [...reactions];
+  const likesReactions = rArray.length ? rArray.filter(r => r.isLike).map(r => r.user.username).join(', ') : ' ';
+  const dislikesReactions = rArray.length ? rArray.filter(r => !r.isLike).map(r => r.user.username).join(', ') : ' ';
 
   const onDeletePost = () => {
     setDeleteDialog(false);
@@ -97,16 +102,46 @@ const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePos
         <Card.Content extra>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-              {/* eslint-disable-next-line max-len */}
-              <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => likePost(id, user.id, true)}>
-                <Icon name="thumbs up" />
-                {likeCount}
-              </Label>
-              {/* eslint-disable-next-line max-len */}
-              <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => likePost(id, user.id, false)}>
-                <Icon name="thumbs down" />
-                {dislikeCount}
-              </Label>
+              <Popup
+                trigger={
+                  (
+                    <Label
+                      basic
+                      size="small"
+                      as="a"
+                      className={styles.toolbarBtn}
+                      onClick={() => likePost(id, user.id, true, currentUser)}
+                    >
+                      <Icon name="thumbs up" />
+                      {likeCount}
+                    </Label>
+                  )
+                }
+              >
+                <Popup.Content>
+                  {likesReactions}
+                </Popup.Content>
+              </Popup>
+              <Popup
+                trigger={
+                  (
+                    <Label
+                      basic
+                      size="small"
+                      as="a"
+                      className={styles.toolbarBtn}
+                      onClick={() => likePost(id, user.id, false, currentUser)}
+                    >
+                      <Icon name="thumbs down" />
+                      {dislikeCount}
+                    </Label>
+                  )
+                }
+              >
+                <Popup.Content>
+                  {dislikesReactions}
+                </Popup.Content>
+              </Popup>
               <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => toggleExpandedPost(id)}>
                 <Icon name="comment" />
                 {commentCount}
@@ -134,7 +169,7 @@ const Post = ({ userId, post, likePost, toggleExpandedPost, sharePost, deletePos
 };
 
 Post.propTypes = {
-  userId: PropTypes.string.isRequired,
+  user: PropTypes.objectOf(PropTypes.any).isRequired,
   post: PropTypes.objectOf(PropTypes.any).isRequired,
   likePost: PropTypes.func.isRequired,
   toggleExpandedPost: PropTypes.func.isRequired,

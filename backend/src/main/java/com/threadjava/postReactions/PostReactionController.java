@@ -1,6 +1,6 @@
 package com.threadjava.postReactions;
 
-import com.threadjava.postReactions.dto.PostReactionDto;
+import com.threadjava.postReactions.dto.PostReactionCreationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,7 +20,7 @@ public class PostReactionController {
     private SimpMessagingTemplate template;
 
     @PutMapping
-    public Optional<Boolean> setReaction(@RequestBody PostReactionDto postReaction) throws Exception {
+    public Optional<Boolean> setReaction(@RequestBody PostReactionCreationDto postReaction) throws Exception {
         var currentUser = getUserId();
         postReaction.setUserId(currentUser);
         var isNewRecord = postsService.setReaction(postReaction);

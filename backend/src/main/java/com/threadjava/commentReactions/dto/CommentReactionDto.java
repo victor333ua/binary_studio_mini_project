@@ -1,12 +1,14 @@
 package com.threadjava.commentReactions.dto;
 
+import com.threadjava.users.dto.UserShortDto;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.UUID;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CommentReactionDto {
-    private UUID commentId;
-    private Boolean isLike;
-    private UUID userId;
+    UserShortDto user;
+    Boolean isLike;
 }

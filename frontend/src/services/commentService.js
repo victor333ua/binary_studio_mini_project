@@ -6,7 +6,8 @@ export const addComment = async request => {
     type: 'POST',
     request
   });
-  return response.json();
+  // server returns UUID
+  return response.text();
 };
 
 export const getComment = async id => {

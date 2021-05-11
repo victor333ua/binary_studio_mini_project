@@ -4,12 +4,14 @@ import com.threadjava.comment.CommentRepository;
 import com.threadjava.comment.model.Comment;
 import com.threadjava.commentReactions.model.CommentReaction;
 import com.threadjava.commentReactions.CommentReactionsRepository;
+import com.threadjava.commentReactions.model.CommentReactionId;
 import com.threadjava.image.ImageRepository;
 import com.threadjava.image.model.Image;
 import com.threadjava.post.PostsRepository;
 import com.threadjava.post.model.Post;
 import com.threadjava.postReactions.PostReactionsRepository;
 import com.threadjava.postReactions.model.PostReaction;
+import com.threadjava.postReactions.model.PostReactionId;
 import com.threadjava.users.UsersRepository;
 import com.threadjava.users.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -170,15 +170,13 @@ public class DatabaseSeeder {
                 "voluptatem repellendus quo alias at laudantium\nmollitia quidem esse\ntemporibus consequuntur vitae rerum illum\nid corporis sit id"
         };
 
-        var comments = IntStream.range(0, commentsText.length)
-                .mapToObj(i -> {
-                    var newPost = new Comment();
-                    newPost.setBody(commentsText[i]);
-                    newPost.setUser(users.get(randomize.nextInt(users.size())));
-                    newPost.setPost(posts.get(randomize.nextInt(posts.size())));
-                    return newPost;
-                })
-                .collect(Collectors.toList());
+        var comments = Arrays.stream(commentsText).map(s -> {
+            var newPost = new Comment();
+            newPost.setBody(s);
+            newPost.setUser(users.get(randomize.nextInt(users.size())));
+            newPost.setPost(posts.get(randomize.nextInt(posts.size())));
+            return newPost;
+        }).collect(Collectors.toList());
 
         commentRepository.saveAll(comments);
     }
@@ -188,18 +186,17 @@ public class DatabaseSeeder {
         var users = usersRepository.findAll();
         var posts = postsRepository.findAll();
 
-        var reactions = Stream.concat(
-                IntStream.range(0, 25).mapToObj(x -> true),
-                IntStream.range(0, 25).mapToObj(x -> false))
-                .map(x -> {
-                    var reaction = new PostReaction();
-                    reaction.setIsLike(x);
-                    reaction.setPost(posts.get(randomize.nextInt(posts.size())));
-                    reaction.setUser(users.get(randomize.nextInt(users.size())));
-                    return reaction;
-                })
-                .collect(Collectors.toList());
-        postReactionsRepository.saveAll(reactions);
+        Set<PostReaction> set = new HashSet<>();
+        int sizePosts = posts.size();
+        int sizeUsers = users.size();
+        for(int i=0; i < 10*sizePosts; i++) {
+            var post = posts.get(randomize.nextInt(sizePosts));
+            for(int j = 0; j < 10*sizeUsers; j++) {
+                var user = users.get(randomize.nextInt(sizeUsers));
+                set.add(new PostReaction(user, post, randomize.nextBoolean()));
+            }
+        }
+        postReactionsRepository.saveAll(set);
     }
 
     private List<Image> getUserImages(){
@@ -252,16 +249,19 @@ public class DatabaseSeeder {
         var randomize = new Random();
         var users = usersRepository.findAll();
         var comments = commentRepository.findAll();
-        var reactions = Stream.concat(
-                IntStream.range(0, 25).mapToObj(x -> true),
-                IntStream.range(0, 25).mapToObj(x -> false))
-                .map(x -> {
-                    var reaction = new CommentReaction();
-                    reaction.setIsLike(x);
-                    reaction.setComment(comments.get(randomize.nextInt(comments.size())));
-                    reaction.setUser(users.get(randomize.nextInt(users.size())));
-                    return reaction;
-                })
+
+        Set<CommentReactionId> set = new HashSet<>();
+        int sizeComments = comments.size();
+        int sizeUsers = users.size();
+        for(int i=0; i < 10*sizeComments; i++) {
+            var comment = comments.get(randomize.nextInt(sizeComments));
+            for(int j = 0; j < 10*sizeUsers; j++) {
+                var user = users.get(randomize.nextInt(sizeUsers));
+                set.add(new CommentReactionId(comment, user));
+            }
+        }
+        var reactions = set.stream()
+                .map(key -> new  CommentReaction(key, randomize.nextBoolean()))
                 .collect(Collectors.toList());
         commentReactionsRepository.saveAll(reactions);
     }

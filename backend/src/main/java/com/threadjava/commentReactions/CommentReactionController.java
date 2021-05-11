@@ -1,10 +1,7 @@
 package com.threadjava.commentReactions;
 
-import com.threadjava.commentReactions.dto.CommentReactionDto;
-import com.threadjava.post.PostsService;
-import com.threadjava.postReactions.dto.PostReactionDto;
+import com.threadjava.commentReactions.dto.CommentReactionCreationDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +18,7 @@ public class CommentReactionController {
     private CommentReactionService commentReactionService;
 
     @PutMapping
-    public Optional<Boolean> setReaction(@RequestBody CommentReactionDto commentReaction) throws Exception {
+    public Optional<Boolean> setReaction(@RequestBody CommentReactionCreationDto commentReaction) {
         var currentUser = getUserId();
         commentReaction.setUserId(currentUser);
         var isNewRecord = commentReactionService.setReaction(commentReaction);

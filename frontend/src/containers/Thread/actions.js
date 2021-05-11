@@ -48,7 +48,7 @@ export const addPost = post => async dispatch => {
   dispatch(addPostAction(newPost));
 };
 
-export const likePost = (postId, postOwnerId, isLike) => async dispatch => {
+export const likePost = (postId, postOwnerId, isLike, currentUser) => async dispatch => {
   let isNewRecord;
   try {
     isNewRecord = await postService.likePost(postId, postOwnerId, isLike);
@@ -57,7 +57,7 @@ export const likePost = (postId, postOwnerId, isLike) => async dispatch => {
     // eslint-disable-next-line no-console
     console.log(err);
   }
-  dispatch({ type: ADD_LIKE, payload: { postId, isLike, isNewRecord } });
+  dispatch({ type: ADD_LIKE, payload: { postId, isLike, isNewRecord, currentUser } });
 };
 
 export const deletePost = id => async dispatch => {

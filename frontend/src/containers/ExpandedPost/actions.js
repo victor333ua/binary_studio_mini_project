@@ -15,17 +15,17 @@ export const toggleExpandedPost = postId => async dispatch => {
 };
 
 export const addComment = ({ postId, body }) => async dispatch => {
-  const { id } = await commentService.addComment({ postId, body });
+  const id = await commentService.addComment({ postId, body });
   const comment = await commentService.getComment(id);
 
   dispatch({ type: ADD_COMMENT, payload: { postId, comment } });
 };
 
-export const likeComment = (commentId, isLike) => async dispatch => {
+export const likeComment = (commentId, isLike, currentUser) => async dispatch => {
   let isNewRecord = await commentService.likeComment(commentId, isLike);
   if (isNewRecord === undefined) isNewRecord = null;
 
-  dispatch({ type: ADD_LIKE_COMMENT, payload: { isNewRecord, commentId, isLike } });
+  dispatch({ type: ADD_LIKE_COMMENT, payload: { isNewRecord, commentId, isLike, currentUser } });
 };
 
 export const deleteComment = id => async dispatch => {

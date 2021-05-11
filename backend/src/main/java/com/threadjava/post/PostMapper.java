@@ -10,6 +10,7 @@ public abstract class PostMapper {
     public static final PostMapper MAPPER = Mappers.getMapper(PostMapper.class);
 
     @Mapping(target = "comments", ignore = true)
+    @Mapping(target = "reactions", ignore = true)
     public abstract PostDetailsDto queryPostToPostDetailsDto(PostDetailsQueryResult post);
 
     @Mapping(source = "imageId", target = "image.id", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
@@ -34,6 +35,4 @@ public abstract class PostMapper {
         }
         return entity;
     }
-
-    public abstract PostListDto queryPostListToPostListDto(PostListQueryResult model);
 }

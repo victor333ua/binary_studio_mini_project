@@ -1,7 +1,6 @@
 package com.threadjava.comment;
 
 import com.threadjava.comment.dto.CommentDetailsDto;
-import com.threadjava.comment.dto.CommentDetailsWithLikesDto;
 import com.threadjava.comment.dto.CommentSaveDto;
 import com.threadjava.comment.dto.CommentUpdateDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +15,14 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("/{id}")
-    public CommentDetailsWithLikesDto get(@PathVariable UUID id) {
-        return commentService.getCommentDetailsWithLikesById(id);
+    public CommentDetailsDto get(@PathVariable UUID id) {
+        return commentService.getCommentDetailsById(id);
     }
 
     @PostMapping
-    public CommentDetailsDto post(@RequestBody CommentSaveDto commentDto) {
-        commentDto.setUserId(getUserId());
-        return commentService.create(commentDto);
+    public String post(@RequestBody CommentSaveDto commentSaveDto) {
+        commentSaveDto.setUserId(getUserId());
+        return commentService.create(commentSaveDto);
     }
 
     @PutMapping
