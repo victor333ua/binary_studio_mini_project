@@ -67,9 +67,7 @@ const Notifications = (
     const comment = JSON.parse(message.body);
     if (comment.user.id === id) return; // action with my comment already added to state
     NotificationManager.info('New comment added!');
-    if (currentPostId === comment.postId) {
-      addComment(comment);
-    }
+    addComment(comment); // it's necessary for all posts
     // toggleExpandedPost(postId); // get expPost with comments from server
   };
 
@@ -86,9 +84,7 @@ const Notifications = (
     const { userId, postId, id: commentId } = JSON.parse(message.body);
     if (userId === id) return; // action with my comment already added to state
     NotificationManager.info('some comment deleted!');
-    if (currentPostId === postId) {
-      deleteComment(commentId);
-    }
+    deleteComment({ id: commentId, postId }); // it's necessary for all posts
   };
 
   const containerForStompClient = useRef(null);

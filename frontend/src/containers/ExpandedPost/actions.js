@@ -18,8 +18,8 @@ export const addCommentAction = comment => (
   { type: ADD_COMMENT, comment }
 );
 
-export const deleteCommentAction = id => (
-  { type: DELETE_COMMENT, id }
+export const deleteCommentAction = ({ id, postId }) => (
+  { type: DELETE_COMMENT, payload: { id, postId } }
 );
 
 export const updateCommentAction = ({ id, body }) => (
@@ -44,7 +44,7 @@ export const likeComment = ({ commentId, postId, isLike, currentUser }) => async
 
 export const deleteComment = ({ id, postId }) => async dispatch => {
   await commentService.deleteComment({ id, postId });
-  dispatch(deleteCommentAction(id));
+  dispatch(deleteCommentAction({ id, postId }));
 };
 
 export const updateComment = ({ id, postId, body }) => async dispatch => {

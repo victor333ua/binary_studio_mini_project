@@ -78,22 +78,26 @@ export default (state = {}, action) => {
       return { ...state, posts: updatedPosts, expandedPost: exPost };
     }
     case ADD_COMMENT: {
-      const updatedPosts = state.posts.map(post => (post.id !== action.comment.postId
+      const { postId } = action.comment;
+      const updatedPosts = state.posts.map(post => (post.id !== postId
         ? post
         : ({ ...post, commentCount: Number(post.commentCount) + 1 })));
 
-      const exPost = state.expandedPost;
-      const newExPost = {
-        ...exPost,
-        comments: [...(exPost.comments || []), action.comment],
-        commentCount: Number(exPost.commentCount) + 1
-      };
-
-      return { ...state, posts: updatedPosts, expandedPost: newExPost };
+      let exPost = state.expandedPost;
+      if (exPost && exPost.id === postId) {
+        exPost = {
+          ...exPost,
+          comments: [...(exPost.comments || []), action.comment],
+          commentCount: Number(exPost.commentCount) + 1
+        };
+      }
+      return { ...state, posts: updatedPosts, expandedPost: exPost };
     }
     case ADD_LIKE_COMMENT: {
       const exPost = state.expandedPost;
-      const { commentId, isLike, isNewRecord, currentUser } = action.payload;
+      const { postId, commentId, isLike, isNewRecord, currentUser } = action.payload;
+      if (!exPost || exPost.id !== postId) return state;
+
       const newComments = exPost.comments
         .map(c => (c.id !== commentId
           ? c
@@ -107,16 +111,23 @@ export default (state = {}, action) => {
       return { ...state, expandedPost: { ...exPost, comments: newComments } };
     }
     case DELETE_COMMENT: {
-      const exPost = state.expandedPost;
-      const newComments = [...exPost.comments];
-      const index = newComments.findIndex(comment => comment.id === action.id);
-      newComments.splice(index, 1);
-      return { ...state,
-        expandedPost: {
+      const { id, postId } = action.payload;
+      const updatedPosts = state.posts.map(post => (post.id !== postId
+        ? post
+        : ({ ...post, commentCount: Number(post.commentCount) - 1 })));
+
+      let exPost = state.expandedPost;
+      if (exPost && exPost.id === postId) {
+        const newComments = [...exPost.comments];
+        const index = newComments.findIndex(comment => comment.id === id);
+        newComments.splice(index, 1);
+        exPost = {
           ...exPost,
           comments: newComments,
           commentCount: Number(exPost.commentCount) - 1
-        } };
+        };
+      }
+      return { ...state, posts: updatedPosts, expandedPost: exPost };
     }
     case ACTION_REJECTED: {
       return {
