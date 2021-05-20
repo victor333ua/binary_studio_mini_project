@@ -6,8 +6,7 @@ export const addComment = async request => {
     type: 'POST',
     request
   });
-  // server returns UUID
-  return response.text();
+  return response.json();
 };
 
 export const getComment = async id => {
@@ -18,32 +17,27 @@ export const getComment = async id => {
   return response.json();
 };
 
-export const likeComment = async (commentId, isLike) => {
+export const likeComment = async ({ commentId, postId, isLike, currentUser }) => {
   const response = await callWebApi({
-    endpoint: '/api/commentreaction',
+    endpoint: '/api/commentReaction',
     type: 'PUT',
-    request: {
-      commentId,
-      isLike
-    }
+    request: { commentId, postId, isLike, currentUser }
   });
   return response.json();
 };
 
-export const deleteComment = async id => {
+export const deleteComment = async ({ id, postId }) => {
   await callWebApi({
-    endpoint: `/api/comments/${id}`,
-    type: 'DELETE'
+    endpoint: '/api/comments',
+    type: 'DELETE',
+    request: { id, postId }
   });
 };
 
-export const updateComment = async comment => {
+export const updateComment = async ({ id, postId, body }) => {
   await callWebApi({
     endpoint: '/api/comments',
     type: 'PUT',
-    request: {
-      id: comment.id,
-      body: comment.body
-    }
+    request: { id, postId, body }
   });
 };

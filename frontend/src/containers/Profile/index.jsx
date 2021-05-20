@@ -8,8 +8,8 @@ import {
   Grid, Icon,
   Image, Message
 } from 'semantic-ui-react';
-import './styles.module.scss';
 import { bindActionCreators } from 'redux';
+import styles from './styles.module.scss';
 import * as imageService from '../../services/imageService';
 import { saveUser } from './actions';
 
@@ -62,6 +62,7 @@ const Profile = ({ user, status, error, saveUser: save }) => {
         <br />
         <Form size="large" onSubmit={formSubmit} error={Boolean(combinedError)}>
           <Form.Input
+            className={styles.passwordInput}
             fluid
             icon="user"
             iconPosition="left"
@@ -73,6 +74,7 @@ const Profile = ({ user, status, error, saveUser: save }) => {
           />
           <br />
           <Form.Input
+            className={styles.passwordInput}
             fluid
             icon="at"
             iconPosition="left"
@@ -89,6 +91,7 @@ const Profile = ({ user, status, error, saveUser: save }) => {
             content={combinedError}
           />
           <Form.Input
+            className={styles.passwordInput}
             fluid
             iconPosition="left"
             icon="lock"
@@ -97,7 +100,11 @@ const Profile = ({ user, status, error, saveUser: save }) => {
             disabled={!isEditMode}
             value={password}
             onChange={e => setPassword(e.target.value)}
-            action={{ icon: iconName, disabled: !isEditMode, type: 'button', onClick: e => changeVisibility(e) }}
+            action={{ className: styles.actionButton,
+              icon: iconName,
+              disabled: !isEditMode,
+              type: 'button',
+              onClick: e => changeVisibility(e) }}
           />
           <br />
           <br />

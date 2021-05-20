@@ -7,4 +7,5 @@ import java.util.UUID;
 public class ImageDto {
     private UUID id;
     private String link;
+    private String deleteHash;
 }

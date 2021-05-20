@@ -2,6 +2,7 @@ package com.threadjava.commentReactions;
 
 import com.threadjava.commentReactions.dto.CommentReactionCreationDto;
 import com.threadjava.commentReactions.dto.CommentReactionDto;
+import com.threadjava.commentReactions.model.CommentReaction;
 import com.threadjava.postReactions.PostReactionMapper;
 import com.threadjava.postReactions.dto.PostReactionDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,16 @@ public class CommentReactionService {
     @Autowired
     private CommentReactionsRepository commentReactionsRepository;
 
-    public Optional<Boolean> setReaction(CommentReactionCreationDto commentReactionDto) {
+    public Optional<Boolean> setReaction(CommentReactionCreationDto commentReactionDto) throws Exception {
 
         var commentId = commentReactionDto.getCommentId();
-        var userId = commentReactionDto.getUserId();
-
-        var reaction = commentReactionsRepository.getReaction(commentId, userId);
+        var userId = commentReactionDto.getCurrentUser().getId();
+        Optional<CommentReaction> reaction;
+        try {
+            reaction = commentReactionsRepository.getReaction(commentId, userId);
+        } catch (Exception e) {
+            throw new Exception("search of comment's reaction unsuccessful may be due to double rows");
+        }
 
         if (reaction.isPresent()) {
             var react = reaction.get();

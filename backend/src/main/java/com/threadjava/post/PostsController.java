@@ -1,12 +1,10 @@
 package com.threadjava.post;
 
-
 import com.threadjava.post.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.threadjava.auth.TokenService.getUserId;
@@ -33,20 +31,27 @@ public class PostsController {
     }
 
     @PostMapping
-    public String post(@RequestBody PostCreationDto postDto) {
+    public PostCreationResponseDto post(@RequestBody PostCreationDto postDto) {
         postDto.setUserId(getUserId());
-        var uuid = postsService.create(postDto);
-//        template.convertAndSend("/topic/new_post", item);
-        return uuid.toString();
+        var postResponse = postsService.create(postDto);
+
+        template.convertAndSend("/topic/post/new", postResponse);
+
+        return postResponse;
     }
-    @DeleteMapping("/{postId}")
-    public void delete(@PathVariable UUID postId) {
-        postsService.delete(postId);
+    @DeleteMapping
+    public void delete(@RequestBody PostDeleteDto postDeleteDto) {
+        postsService.delete(postDeleteDto.getId());
+
+        template.convertAndSend("/topic/post/delete", postDeleteDto);
     }
 
     @PutMapping
     public void update(@RequestBody PostUpdateDto postUpdateDto) {
         postsService.update(postUpdateDto);
+
+        template.convertAndSend("/topic/post/update", postUpdateDto);
+
     }
 
 }

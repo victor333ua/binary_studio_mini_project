@@ -24,7 +24,7 @@ public abstract class CommentReactionMapper {
         var comment = new Comment();
         comment.setId(commentReactionDto.getCommentId());
         var user = new User();
-        user.setId(commentReactionDto.getUserId());
+        user.setId(commentReactionDto.getCurrentUser().getId());
 
         var composedId = new CommentReactionId(comment, user);
 

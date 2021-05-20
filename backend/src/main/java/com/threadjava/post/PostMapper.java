@@ -22,11 +22,9 @@ public abstract class PostMapper {
     @Mapping(target = "reactions", ignore = true)
     public abstract Post postCreationDtoToPost(PostCreationDto postCreationDto);
 
-    @Mapping(source = "image.id", target = "image.id", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "comments", ignore = true)
-    @Mapping(target = "reactions", ignore = true)
-    public abstract Post postUpdateDtoToPost(PostUpdateDto postUpdateDto);
+    @Mapping(source = "id", target = "postId")
+    @Mapping(source = "user.id", target = "userId")
+    public abstract PostCreationResponseDto postToPostCreationResponseDto(Post post);
 
     @AfterMapping
     public Post doAfterMapping(@MappingTarget Post entity) {

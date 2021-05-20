@@ -21,15 +21,15 @@ public class PostReactionController {
 
     @PutMapping
     public Optional<Boolean> setReaction(@RequestBody PostReactionCreationDto postReaction) throws Exception {
-        var currentUser = getUserId();
-        postReaction.setUserId(currentUser);
-        var isNewRecord = postsService.setReaction(postReaction);
 
-//        if (reaction.isPresent() && reaction.get().getUserId() != getUserId()) {
-        if (isNewRecord.isPresent() && postReaction.getPostOwnerId() != currentUser) {
-            // notify a user if someone (not himself) liked his post
-            template.convertAndSend("/topic/like", "Your post was liked!");
-        }
-        return isNewRecord;
+        var optIsNewRecord = postsService.setReaction(postReaction);
+
+// notify everyone about likes/dislikes the post
+        Boolean isNewRecord = optIsNewRecord.orElse(null);
+        postReaction.setIsNewRecord(isNewRecord);
+
+        template.convertAndSend("/topic/post/like", postReaction);
+
+        return optIsNewRecord;
     }
 }

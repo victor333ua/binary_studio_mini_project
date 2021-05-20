@@ -4,20 +4,24 @@
   :global(.ui.disabled.input) {
     opacity: 1.00!important;
     input[disabled] {
-      background-color: #e8e5e5!important;
+      opacity: 1.00!important;
     }
-
     :global(.ui.button:disabled) {
-      border: 1px solid rgba(34, 36, 38, .15);
-      background-color: #e8e5e5;
       opacity: 1.00!important;
     }
   }
 }
-
-:global(.ui.action.input .ui.button) {
-  border: 1px solid rgba(34, 36, 38, .15);
-  background-color: transparent;
+.passwordInput {
+  input[disabled] {
+    background-color: #e8e5e5 !important;
+  }
 }
-
+//:global(.ui.action.input .ui.button) {
+.actionButton {
+  border: 1px solid rgba(34, 36, 38, .15)!important;
+  background-color: transparent!important;
+}
+.actionButton:disabled {
+  background-color: #e8e5e5!important;
+}
 

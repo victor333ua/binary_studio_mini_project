@@ -15,7 +15,7 @@ public interface PostReactionMapper {
 
     PostReactionDto queryPostReactionToPostReactionDto(QueryPostReaction queryPostReaction);
 
-    @Mapping(source = "userId", target = "user.id")
+    @Mapping(source = "currentUser.id", target = "user.id")
     @Mapping(source = "postId", target = "post.id")
     PostReaction dtoToPostReaction(PostReactionCreationDto postReactionDto);
 }

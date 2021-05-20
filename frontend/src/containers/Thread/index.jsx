@@ -79,10 +79,6 @@ const Thread = ({
     postsFilter.from = from + count;
   };
 
-  const sharePost = id => {
-    setSharedPostId(id);
-  };
-
   return (
     <div className={styles.threadContent}>
       <div className={styles.addPostForm}>
@@ -122,15 +118,13 @@ const Thread = ({
             post={post}
             likePost={like}
             toggleExpandedPost={toggle}
-            sharePost={sharePost}
             deletePost={cut}
             updatePost={update}
             key={post.id}
           />
         ))}
       </InfiniteScroll>
-      {expandedPost && <ExpandedPost sharePost={sharePost} />}
-      {sharedPostId && <SharedPostLink postId={sharedPostId} close={() => setSharedPostId(undefined)} />}
+      {expandedPost && <ExpandedPost />}
     </div>
   );
 };

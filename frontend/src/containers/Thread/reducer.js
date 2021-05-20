@@ -1,18 +1,19 @@
 import {
-  SET_ALL_POSTS,
-  LOAD_MORE_POSTS,
+  ACTION_REJECTED,
+  ADD_LIKE,
   ADD_POST,
   DELETE_POST,
-  UPDATE_POST,
-  ADD_LIKE
+  LOAD_MORE_POSTS,
+  SET_ALL_POSTS,
+  UPDATE_POST
 } from './actionTypes';
 
 import {
-  SET_EXPANDED_POST,
   ADD_COMMENT,
   ADD_LIKE_COMMENT,
-  UPDATE_COMMENT,
-  DELETE_COMMENT
+  DELETE_COMMENT,
+  SET_EXPANDED_POST,
+  UPDATE_COMMENT
 } from '../ExpandedPost/actionTypes';
 
 import { addLike } from '../../helpers/likesHelper';
@@ -51,10 +52,18 @@ export default (state = {}, action) => {
       };
     }
     case UPDATE_POST: {
-      const index = state.posts.findIndex(post => post.id === action.post.id);
+      const { id, body, image } = action.payload;
+      const index = state.posts.findIndex(post => post.id === id);
+      const updatedItem = { ...state.posts[index], body, image };
       const updatedPosts = [...state.posts];
-      updatedPosts.splice(index, 1, action.post);
-      return { ...state, posts: updatedPosts };
+      updatedPosts.splice(index, 1, updatedItem);
+      let exPost = state.expandedPost;
+      if (exPost && exPost.id === id) exPost = { ...exPost, body, image };
+      return {
+        ...state,
+        posts: updatedPosts,
+        expandedPost: exPost
+      };
     }
     case ADD_LIKE: {
       const { postId, isLike, isNewRecord, currentUser } = action.payload;
@@ -63,18 +72,20 @@ export default (state = {}, action) => {
         : addLike(post, isLike, isNewRecord, currentUser)
       ));
       let exPost = state.expandedPost;
-      if (exPost && exPost.id === postId) exPost = addLike(exPost, isLike, isNewRecord, currentUser);
+      if (exPost && exPost.id === postId) {
+        exPost = addLike(exPost, isLike, isNewRecord, currentUser);
+      }
       return { ...state, posts: updatedPosts, expandedPost: exPost };
     }
     case ADD_COMMENT: {
-      const updatedPosts = state.posts.map(post => (post.id !== action.payload.postId
+      const updatedPosts = state.posts.map(post => (post.id !== action.comment.postId
         ? post
         : ({ ...post, commentCount: Number(post.commentCount) + 1 })));
 
       const exPost = state.expandedPost;
       const newExPost = {
         ...exPost,
-        comments: [...(exPost.comments || []), action.payload.comment],
+        comments: [...(exPost.comments || []), action.comment],
         commentCount: Number(exPost.commentCount) + 1
       };
 
@@ -91,7 +102,7 @@ export default (state = {}, action) => {
     }
     case UPDATE_COMMENT: {
       const exPost = state.expandedPost;
-      const { id, body } = action.comment;
+      const { id, body } = action.payload;
       const newComments = exPost.comments.map(c => (c.id !== id ? c : { ...c, body }));
       return { ...state, expandedPost: { ...exPost, comments: newComments } };
     }
@@ -106,6 +117,13 @@ export default (state = {}, action) => {
           comments: newComments,
           commentCount: Number(exPost.commentCount) - 1
         } };
+    }
+    case ACTION_REJECTED: {
+      return {
+        ...state,
+        status: 'error',
+        error: action.error.message
+      };
     }
     default:
       return state;

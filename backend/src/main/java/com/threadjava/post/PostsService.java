@@ -2,11 +2,13 @@ package com.threadjava.post;
 
 import com.threadjava.comment.CommentRepository;
 import com.threadjava.comment.CommentService;
+import com.threadjava.image.ImageMapper;
 import com.threadjava.post.dto.*;
 import com.threadjava.post.model.Post;
 import com.threadjava.postReactions.PostReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,18 +61,22 @@ public class PostsService {
         return post;
     }
 
-    public UUID create(PostCreationDto postDto) {
+    public PostCreationResponseDto create(PostCreationDto postDto) {
         Post post = PostMapper.MAPPER.postCreationDtoToPost(postDto);
-        Post postCreated = postsCrudRepository.save(post);
-        return postCreated.getId();
+        post = postsCrudRepository.save(post);
+        return PostMapper.MAPPER.postToPostCreationResponseDto(post);
     }
     @Transactional
     public void delete (UUID id) {
         postsCrudRepository.deleteById(id);
     }
 
+    @Transactional
+    @Modifying
     public void update(PostUpdateDto postUpdateDto) {
-        var post = PostMapper.MAPPER.postUpdateDtoToPost(postUpdateDto);
+        var post = postsCrudRepository.getOne(postUpdateDto.getId());
+        post.setBody(postUpdateDto.getBody());
+        post.setImage(ImageMapper.MAPPER.imageDtoToImage(postUpdateDto.getImage()));
         postsCrudRepository.save(post);
     }
 }

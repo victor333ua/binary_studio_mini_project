@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Comment as CommentUI, Form, Icon, Popup } from 'semantic-ui-react';
 import moment from 'moment';
@@ -12,7 +12,8 @@ const Comment = (
     likeComment,
     updateComment,
     deleteComment,
-    user: currentUser
+    user: currentUser,
+    postId
   }
 ) => {
   const isMineComment = currentUser.id === user.id;
@@ -22,17 +23,27 @@ const Comment = (
   const dislikesReactions = rArray.length ? rArray.filter(r => !r.isLike).map(r => r.user.username).join(', ') : ' ';
 
   const [text, setText] = useState(body);
+  useEffect(() => {
+    if (text !== body) setText(body);
+  }, [body]);
+
   const [openDeleteDialog, setDeleteDialog] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
 
   const onCloseDeleteDialog = () => setDeleteDialog(false);
+
   const onDelete = async () => {
-    await deleteComment(id);
+    await deleteComment({ id, postId });
     setDeleteDialog(false);
   };
+
   const onUpdateComment = async () => {
-    await updateComment({ id, body: text });
+    await updateComment({ id, body: text, postId });
     setEditMode(false);
+  };
+
+  const onLikeComment = async isLike => {
+    await likeComment({ commentId: id, isLike, postId, currentUser });
   };
 
   return (
@@ -55,7 +66,7 @@ const Comment = (
                 <Popup
                   trigger={
                     (
-                      <CommentUI.Action as="a" onClick={() => likeComment(id, true, currentUser)}>
+                      <CommentUI.Action as="a" onClick={() => onLikeComment(true)}>
                         <Icon name="thumbs up"/>
                         {likeCount}
                       </CommentUI.Action>
@@ -69,7 +80,7 @@ const Comment = (
                 <Popup
                   trigger={
                     (
-                      <CommentUI.Action as="a" onClick={() => likeComment(id, false, currentUser)}>
+                      <CommentUI.Action as="a" onClick={() => onLikeComment(false)}>
                         <Icon name="thumbs down"/>
                         {dislikeCount}
                       </CommentUI.Action>
@@ -121,7 +132,8 @@ Comment.propTypes = {
   comment: PropTypes.objectOf(PropTypes.any).isRequired,
   likeComment: PropTypes.func.isRequired,
   deleteComment: PropTypes.func.isRequired,
-  updateComment: PropTypes.func.isRequired
+  updateComment: PropTypes.func.isRequired,
+  postId: PropTypes.string.isRequired
 };
 
 export default Comment;

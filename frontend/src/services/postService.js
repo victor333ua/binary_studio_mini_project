@@ -15,8 +15,7 @@ export const addPost = async request => {
     type: 'POST',
     request
   });
-  // server returns UUID
-  return response.text();
+  return response.json();
 };
 
 export const getPost = async id => {
@@ -27,23 +26,25 @@ export const getPost = async id => {
   return response.json();
 };
 
-export const likePost = async (postId, postOwnerId, isLike) => {
+export const likePost = async ({ postId, postOwnerId, isLike, currentUser }) => {
   const response = await callWebApi({
     endpoint: '/api/postreaction',
     type: 'PUT',
     request: {
       postId,
       postOwnerId,
-      isLike
+      isLike,
+      currentUser
     }
   });
   return response.json();
 };
 
-export const deletePost = async postId => {
+export const deletePost = async ({ id, currentUser }) => {
   await callWebApi({
-    endpoint: `/api/posts/${postId}`,
-    type: 'DELETE'
+    endpoint: '/api/posts',
+    type: 'DELETE',
+    request: { id, currentUser }
   });
 };
 

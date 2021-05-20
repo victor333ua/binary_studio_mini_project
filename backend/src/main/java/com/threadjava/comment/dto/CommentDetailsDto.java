@@ -18,4 +18,5 @@ public class CommentDetailsDto {
     private long likeCount;
     private long dislikeCount;
     private List<CommentReactionDto> reactions = new ArrayList<>();
+    private UUID postId;
 }

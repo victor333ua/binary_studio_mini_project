@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
@@ -8,19 +9,16 @@ import RegistrationPage from 'src/containers/RegistrationPage';
 import Profile from 'src/containers/Profile';
 import Header from 'src/components/Header';
 import SharedPost from 'src/containers/SharedPost';
-// import Spinner from 'src/components/Spinner';
 import NotFound from 'src/scenes/NotFound';
 import PrivateRoute from 'src/containers/PrivateRoute';
 import PublicRoute from 'src/containers/PublicRoute';
 import Notifications from 'src/components/Notifications';
 import { logout } from 'src/containers/Profile/actions';
-import { applyPost } from 'src/containers/Thread/actions';
 import PropTypes from 'prop-types';
 
 const Routing = ({
   user,
   isAuthorized,
-  applyPost: newPost,
   logout: signOut
 }) => (
   <div className="fill">
@@ -39,31 +37,26 @@ const Routing = ({
         <Route path="*" exact component={NotFound}/>
       </Switch>
     </main>
-    <Notifications applyPost={newPost} user={user}/>
+    {isAuthorized && <Notifications user={user} />}
   </div>
 );
 
 Routing.propTypes = {
   isAuthorized: PropTypes.bool,
   logout: PropTypes.func.isRequired,
-  applyPost: PropTypes.func.isRequired,
   user: PropTypes.objectOf(PropTypes.any)
-  // isLoading: PropTypes.bool
-  // loadCurrentUser: PropTypes.func.isRequired
 };
 
 Routing.defaultProps = {
   isAuthorized: false,
   user: {}
-  // isLoading: true
 };
 
-const actions = { logout, applyPost };
+const actions = { logout };
 
 const mapStateToProps = ({ profile }) => ({
   isAuthorized: profile.isAuthorized,
   user: profile.user
-  // isLoading: profile.isLoading
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);

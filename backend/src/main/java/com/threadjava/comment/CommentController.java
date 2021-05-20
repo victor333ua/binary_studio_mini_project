@@ -2,10 +2,11 @@ package com.threadjava.comment;
 
 import com.threadjava.comment.dto.CommentDetailsDto;
 import com.threadjava.comment.dto.CommentSaveDto;
-import com.threadjava.comment.dto.CommentUpdateDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
+
 import static com.threadjava.auth.TokenService.getUserId;
 
 @RestController
@@ -13,6 +14,8 @@ import static com.threadjava.auth.TokenService.getUserId;
 public class CommentController {
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private SimpMessagingTemplate template;
 
     @GetMapping("/{id}")
     public CommentDetailsDto get(@PathVariable UUID id) {
@@ -20,18 +23,28 @@ public class CommentController {
     }
 
     @PostMapping
-    public String post(@RequestBody CommentSaveDto commentSaveDto) {
-        commentSaveDto.setUserId(getUserId());
-        return commentService.create(commentSaveDto);
+    public CommentDetailsDto create(@RequestBody CommentSaveDto commentDto) {
+        commentDto.setUserId(getUserId());
+        var commentId = commentService.create(commentDto);
+        var comment = commentService.getCommentDetailsById(commentId);
+
+        comment.setPostId(commentDto.getPostId());
+        template.convertAndSend("/topic/comments/add", comment);
+
+        return comment;
     }
 
     @PutMapping
-    public void update(@RequestBody CommentUpdateDto commentDto) {
+    public void update(@RequestBody CommentSaveDto commentDto) {
+        commentDto.setUserId(getUserId());
         commentService.update(commentDto);
+        template.convertAndSend("/topic/comments/update", commentDto);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable UUID id) {
-        commentService.delete(id);
+    @DeleteMapping
+    public void delete(@RequestBody CommentSaveDto commentDto) {
+        commentDto.setUserId(getUserId());
+        commentService.delete(commentDto.getId());
+        template.convertAndSend("/topic/comments/delete", commentDto);
     }
 }

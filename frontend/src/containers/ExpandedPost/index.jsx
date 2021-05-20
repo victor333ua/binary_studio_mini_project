@@ -14,7 +14,6 @@ import { toggleExpandedPost, addComment, likeComment, updateComment, deleteComme
 const ExpandedPost = ({
   user: currentUser,
   post,
-  sharePost,
   likePost: like,
   toggleExpandedPost: toggle,
   deletePost: cut,
@@ -33,7 +32,6 @@ const ExpandedPost = ({
             post={post}
             likePost={like}
             toggleExpandedPost={toggle}
-            sharePost={sharePost}
             deletePost={cut}
             updatePost={update}
           />
@@ -48,6 +46,7 @@ const ExpandedPost = ({
                   key={comment.id}
                   user={currentUser}
                   comment={comment}
+                  postId={post.id}
                   likeComment={likeCom}
                   updateComment={updateCom}
                   deleteComment={deleteCom}
@@ -68,7 +67,6 @@ ExpandedPost.propTypes = {
   likePost: PropTypes.func.isRequired,
   addComment: PropTypes.func.isRequired,
   likeComment: PropTypes.func.isRequired,
-  sharePost: PropTypes.func.isRequired,
   updatePost: PropTypes.func.isRequired,
   deletePost: PropTypes.func.isRequired,
   updateComment: PropTypes.func.isRequired,

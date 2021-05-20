@@ -76,7 +76,12 @@ const LoginForm = ({
           error={!isPasswordValid}
           onChange={ev => passwordChanged(ev.target.value)}
           onBlur={() => setIsPasswordValid(Boolean(password))}
-          action={{ icon: iconName, type: 'button', onClick: e => changeVisibility(e) }}
+          action={{
+            style: { backgroundColor: 'transparent', border: '1px solid rgba(34, 36, 38, .15' },
+            icon: iconName,
+            type: 'button',
+            onClick: e => changeVisibility(e)
+          }}
         />
         <Button
           // onClick={handleLoginClick}

@@ -4,7 +4,7 @@ export const addLike = (elemToAddLike, isLike, isNewRecord, currentUser) => {
   // if for existing record in db we change reaction - increase first & decrease second (isNewRecord - false)
 
   let diff = 1;
-  const updatedReactions = elemToAddLike.reactions;
+  const updatedReactions = [...elemToAddLike.reactions];
   if (isNewRecord == null) diff = -1;
   if (isNewRecord != null) updatedReactions.push({ user: currentUser, isLike });
   if (isNewRecord === false || isNewRecord == null) {

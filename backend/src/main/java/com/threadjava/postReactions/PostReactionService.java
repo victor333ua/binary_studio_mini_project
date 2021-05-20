@@ -24,7 +24,7 @@ public class PostReactionService {
         Optional<PostReaction> reaction;
         try {
             reaction = postReactionsRepository
-                    .getPostReaction(postReactionDto.getUserId(), postReactionDto.getPostId());
+                    .getPostReaction(postReactionDto.getCurrentUser().getId(), postReactionDto.getPostId());
         } catch (Exception e) {
             throw new Exception("search of reaction unsuccessful may be due to double rows");
         }

@@ -7,10 +7,9 @@ import { toggleExpandedPost } from 'src/containers/ExpandedPost/actions';
 
 const SharedPost = ({ match, toggleExpandedPost: toggle }) => {
   useEffect(() => {
-    toggle(match.params.postHash);
+    toggle(match.params.postHash); // action(type:ExpPost, postId)
   });
-
-  return <Redirect to="/" />;
+  return <Redirect to="/" />; // render everything, with extendedPost
 };
 
 SharedPost.propTypes = {

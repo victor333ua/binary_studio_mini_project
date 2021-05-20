@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Card, Image, Label, Icon, Form, Message, Button, Popup } from 'semantic-ui-react';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -7,8 +7,9 @@ import moment from 'moment';
 import styles from './styles.module.scss';
 import { DeleteDialog } from '../DeleteDialog';
 import * as imageService from '../../services/imageService';
+import SharedPostLink from '../SharedPostLink';
 
-const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, sharePost, deletePost, updatePost }) => {
+const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePost, updatePost }) => {
   const {
     id,
     image,
@@ -25,19 +26,25 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, sharePost
   const isMinePost = currentUser.id === user.id;
 
   const [text, setText] = useState(body);
-  const [isEdit, setEdit] = useState(false);
   const [editImage, setEditImage] = useState(image);
+  useEffect(() => {
+    if (body !== text) setText(body);
+    if (editImage !== image) setEditImage(image);
+  }, [body, image]);
+
+  const [isEdit, setEdit] = useState(false);
   const [openDeleteDialog, setDeleteDialog] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [errorUploadingImage, setErrorUploading] = useState(null);
+  const [isSharePostLink, setSharePostLink] = useState(false);
 
   const rArray = [...reactions];
   const likesReactions = rArray.length ? rArray.filter(r => r.isLike).map(r => r.user.username).join(', ') : ' ';
   const dislikesReactions = rArray.length ? rArray.filter(r => !r.isLike).map(r => r.user.username).join(', ') : ' ';
 
-  const onDeletePost = () => {
+  const onDeletePost = async () => {
     setDeleteDialog(false);
-    deletePost(id);
+    await deletePost({ id, currentUser });
   };
   const onCloseDeleteDialog = () => setDeleteDialog(false);
 
@@ -53,15 +60,24 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, sharePost
     }
   };
 
-  const onUpdatePost = () => {
+  const onUpdatePost = async () => {
     const postImage = image?.id === editImage?.id ? image : editImage;
-    updatePost({ id: post.id, createdAt: post.createdAt, user: post.user, body: text, image: postImage });
+    await updatePost({ id: post.id, body: text, image: postImage, currentUser });
     setEdit(false);
+  };
+
+  const onLike = async isLike => {
+    await likePost({ postId: id, postOwnerId: user.id, isLike, currentUser });
   };
 
   return (
     <>
-      <DeleteDialog open={openDeleteDialog} header="Delete Post" onClose={onCloseDeleteDialog} onDelete={onDeletePost}/>
+      <DeleteDialog
+        open={openDeleteDialog}
+        header="Delete Post"
+        onClose={onCloseDeleteDialog}
+        onDelete={onDeletePost}
+      />
       <Card style={{ width: '100%' }}>
         {editImage && <Image src={editImage.link} wrapped ui={false} />}
         <Card.Content>
@@ -110,7 +126,7 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, sharePost
                       size="small"
                       as="a"
                       className={styles.toolbarBtn}
-                      onClick={() => likePost(id, user.id, true, currentUser)}
+                      onClick={() => onLike(true)}
                     >
                       <Icon name="thumbs up" />
                       {likeCount}
@@ -130,7 +146,7 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, sharePost
                       size="small"
                       as="a"
                       className={styles.toolbarBtn}
-                      onClick={() => likePost(id, user.id, false, currentUser)}
+                      onClick={() => onLike(false)}
                     >
                       <Icon name="thumbs down" />
                       {dislikeCount}
@@ -146,7 +162,7 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, sharePost
                 <Icon name="comment" />
                 {commentCount}
               </Label>
-              <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => sharePost(id)}>
+              <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => setSharePostLink(true)}>
                 <Icon name="share alternate" />
               </Label>
             </div>
@@ -164,6 +180,7 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, sharePost
           </div>
         </Card.Content>
       </Card>
+      {isSharePostLink && <SharedPostLink close={() => setSharePostLink(false)} postId={id} />}
     </>
   );
 };
@@ -173,7 +190,6 @@ Post.propTypes = {
   post: PropTypes.objectOf(PropTypes.any).isRequired,
   likePost: PropTypes.func.isRequired,
   toggleExpandedPost: PropTypes.func.isRequired,
-  sharePost: PropTypes.func.isRequired,
   deletePost: PropTypes.func.isRequired,
   updatePost: PropTypes.func.isRequired
 };

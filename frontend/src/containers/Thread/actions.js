@@ -6,8 +6,14 @@ import {
   SET_ALL_POSTS,
   DELETE_POST,
   UPDATE_POST,
-  ADD_LIKE
+  ADD_LIKE,
+  ACTION_REJECTED
 } from './actionTypes';
+
+const postsRejected = error => ({
+  type: ACTION_REJECTED,
+  error
+});
 
 const setPostsAction = posts => ({
   type: SET_ALL_POSTS,
@@ -22,6 +28,21 @@ const addMorePostsAction = posts => ({
 const addPostAction = post => ({
   type: ADD_POST,
   post
+});
+
+export const likePostAction = ({ postId, isLike, isNewRecord, currentUser }) => ({
+  type: ADD_LIKE,
+  payload: { postId, isLike, isNewRecord, currentUser }
+});
+
+export const deletePostAction = id => ({
+  type: DELETE_POST,
+  id
+});
+
+export const updatePostAction = ({ id, body, image }) => ({
+  type: UPDATE_POST,
+  payload: { id, body, image }
 });
 
 export const loadPosts = filter => async dispatch => {
@@ -43,40 +64,36 @@ export const applyPost = postId => async dispatch => {
 };
 
 export const addPost = post => async dispatch => {
-  const id = await postService.addPost(post);
-  const newPost = await postService.getPost(id);
-  dispatch(addPostAction(newPost));
+  const { postId } = await postService.addPost(post);
+  await applyPost(postId)(dispatch);
 };
 
-export const likePost = (postId, postOwnerId, isLike, currentUser) => async dispatch => {
+export const likePost = ({ postId, postOwnerId, isLike, currentUser }) => async dispatch => {
   let isNewRecord;
   try {
-    isNewRecord = await postService.likePost(postId, postOwnerId, isLike);
+    isNewRecord = await postService.likePost({ postId, postOwnerId, isLike, currentUser });
     if (isNewRecord === undefined) isNewRecord = null;
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
+    dispatch(postsRejected(err));
   }
-  dispatch({ type: ADD_LIKE, payload: { postId, isLike, isNewRecord, currentUser } });
+  dispatch(likePostAction({ postId, isLike, isNewRecord, currentUser }));
 };
 
-export const deletePost = id => async dispatch => {
+export const deletePost = ({ id, currentUser }) => async dispatch => {
   try {
-    await postService.deletePost(id);
+    await postService.deletePost({ id, currentUser });
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
+    dispatch(postsRejected(err));
   }
-  dispatch({ type: DELETE_POST, id });
+  dispatch(deletePostAction(id));
 };
 
-export const updatePost = post => async dispatch => {
+export const updatePost = ({ id, body, image, currentUser }) => async dispatch => {
   try {
-    await postService.editPost(post);
+    await postService.editPost({ id, body, image, currentUser });
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
+    dispatch(postsRejected(err));
   }
-  dispatch({ type: UPDATE_POST, post });
+  dispatch(updatePostAction({ id, body, image }));
 };
 

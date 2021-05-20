@@ -2,7 +2,6 @@ package com.threadjava.comment;
 
 import com.threadjava.comment.dto.CommentDetailsDto;
 import com.threadjava.comment.dto.CommentSaveDto;
-import com.threadjava.comment.dto.CommentUpdateDto;
 import com.threadjava.commentReactions.CommentReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,10 +18,10 @@ public class CommentService {
     @Autowired
     private CommentReactionService commentReactionsService;
 
-    public String create(CommentSaveDto commentDto) {
+    public UUID create(CommentSaveDto commentDto) {
         var comment = CommentMapper.MAPPER.commentSaveDtoToModel(commentDto);
         var commentCreated = commentRepository.save(comment);
-        return commentCreated.getId().toString();
+        return commentCreated.getId();
     }
 
     public List<CommentDetailsDto> getAllCommentDetailsByPostId(UUID postId) {
@@ -46,7 +45,7 @@ public class CommentService {
         return commentDto;
     }
 
-    public void update(CommentUpdateDto commentDto) {
+    public void update(CommentSaveDto commentDto) {
         var comment = commentRepository.findById(commentDto.getId())
                 .orElseThrow();
         comment.setBody(commentDto.getBody());
