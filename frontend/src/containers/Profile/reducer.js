@@ -1,4 +1,4 @@
-import { GET_USER_REJECTED, SET_USER, USER_LOADING, USER_LOGOUT } from './actionTypes';
+import { GET_USER_REJECTED, SET_USER, USER_LOADING, USER_LOGOUT, RESET_PASSWORD, RESET_ERROR } from './actionTypes';
 
 export default (state = {
   status: 'idle',
@@ -34,6 +34,17 @@ export default (state = {
         ...state,
         status: 'error',
         error: action.error.message
+      };
+    case RESET_PASSWORD:
+      return {
+        ...state,
+        isPasswordResetAllowed: action.isPasswordResetAllowed
+      };
+    case RESET_ERROR:
+      return {
+        ...state,
+        status: 'idle',
+        error: null
       };
     default:
       return state;

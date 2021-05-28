@@ -1,6 +1,6 @@
 package com.threadjava.commentReactions.dto;
 
-import com.threadjava.users.dto.UserShortDto;
+import com.threadjava.users.dto.UserDetailsDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentReactionDto {
-    UserShortDto user;
+    UserDetailsDto user;
     Boolean isLike;
 }

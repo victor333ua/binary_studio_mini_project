@@ -1,14 +1,17 @@
 package com.threadjava.postReactions.dto;
 
-import com.threadjava.users.dto.UserShortDto;
+import com.threadjava.users.dto.UserDetailsDto;
 import lombok.Data;
+
+import java.util.Date;
 import java.util.UUID;
 
 @Data
 public class PostReactionCreationDto {
     private UUID postId;
-    private UUID postOwnerId;
+    private Date createdAt;
+    private UserDetailsDto postOwner;
     private Boolean isLike;
-    private UserShortDto currentUser;
+    private UserDetailsDto currentUser;
     private Boolean isNewRecord;
 }

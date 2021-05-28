@@ -26,16 +26,11 @@ export const getPost = async id => {
   return response.json();
 };
 
-export const likePost = async ({ postId, postOwnerId, isLike, currentUser }) => {
+export const likePost = async ({ postId, postOwner, createdAt, isLike, currentUser }) => {
   const response = await callWebApi({
-    endpoint: '/api/postreaction',
+    endpoint: '/api/postReaction',
     type: 'PUT',
-    request: {
-      postId,
-      postOwnerId,
-      isLike,
-      currentUser
-    }
+    request: { postId, postOwner, createdAt, isLike, currentUser }
   });
   return response.json();
 };
@@ -53,6 +48,14 @@ export const editPost = async post => {
     endpoint: '/api/posts',
     type: 'PUT',
     request: post
+  });
+};
+
+export const sendEmail = async message => {
+  await callWebApi({
+    endpoint: '/api/email',
+    type: 'POST',
+    request: message
   });
 };
 

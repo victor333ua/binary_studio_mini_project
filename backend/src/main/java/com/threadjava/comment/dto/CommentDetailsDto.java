@@ -1,7 +1,7 @@
 package com.threadjava.comment.dto;
 
 import com.threadjava.commentReactions.dto.CommentReactionDto;
-import com.threadjava.users.dto.UserShortDto;
+import com.threadjava.users.dto.UserDetailsDto;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public class CommentDetailsDto {
     private UUID id;
     private String body;
-    private UserShortDto user;
+    private UserDetailsDto user;
     private Date createdAt;
     private long likeCount;
     private long dislikeCount;

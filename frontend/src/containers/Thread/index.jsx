@@ -6,13 +6,13 @@ import PropTypes from 'prop-types';
 import ExpandedPost from 'src/containers/ExpandedPost';
 import Post from 'src/components/Post';
 import AddPost from 'src/components/AddPost';
-import SharedPostLink from 'src/components/SharedPostLink';
-import { Checkbox, Loader } from 'semantic-ui-react';
+import { Checkbox, Container, Grid, Loader, Segment } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { loadPosts, loadMorePosts, likePost, addPost, updatePost, deletePost } from './actions';
 import { toggleExpandedPost } from '../ExpandedPost/actions';
 
 import styles from './styles.module.scss';
+import CustomCheckbox from '../../components/CustomCheckbox';
 
 const postsFilter = {
   userId: undefined,
@@ -80,32 +80,23 @@ const Thread = ({
   };
 
   return (
-    <div className={styles.threadContent}>
+    <Container text className={styles.threadContent}>
       <div className={styles.addPostForm}>
         <AddPost addPost={createPost} />
       </div>
-
-      <div className={styles.toolbar}>
-        <Checkbox
-          toggle
-          label="Show only my posts"
-          checked={showOwnPosts}
-          onChange={toggleShowOwnPosts}
-        />
-        <Checkbox
-          toggle
-          label="Show only another's posts"
-          checked={showAnothersPosts}
-          onChange={toggleShowAnothersPosts}
-        />
-        <Checkbox
-          toggle
-          label="Show only posts with my likes"
-          checked={showPostsWithMyLikes}
-          onChange={toggleShowPostsWithMyLikes}
-        />
-      </div>
-
+      <Segment className={styles.toolbar}>
+        <Grid textAlign="center" columns={3} >
+          <Grid.Column >
+            <CustomCheckbox label="my own" checked={showOwnPosts} onChange={toggleShowOwnPosts}/>
+          </Grid.Column>
+          <Grid.Column >
+            <CustomCheckbox label="other's" checked={showAnothersPosts} onChange={toggleShowAnothersPosts}/>
+          </Grid.Column>
+          <Grid.Column >
+            <CustomCheckbox label="with my like" checked={showPostsWithMyLikes} onChange={toggleShowPostsWithMyLikes}/>
+          </Grid.Column>
+        </Grid>
+      </Segment>
       <InfiniteScroll
         pageStart={0}
         loadMore={getMorePosts}
@@ -125,7 +116,7 @@ const Thread = ({
         ))}
       </InfiniteScroll>
       {expandedPost && <ExpandedPost />}
-    </div>
+    </Container>
   );
 };
 

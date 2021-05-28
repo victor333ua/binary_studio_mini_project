@@ -1,5 +1,6 @@
 package com.threadjava.postReactions;
 
+import com.threadjava.mail.EmailService;
 import com.threadjava.postReactions.dto.PostReactionCreationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -12,12 +13,14 @@ import java.util.Optional;
 import static com.threadjava.auth.TokenService.getUserId;
 
 @RestController
-@RequestMapping("/api/postreaction")
+@RequestMapping("/api/postReaction")
 public class PostReactionController {
     @Autowired
     private PostReactionService postsService;
     @Autowired
     private SimpMessagingTemplate template;
+    @Autowired
+    EmailService emailService;
 
     @PutMapping
     public Optional<Boolean> setReaction(@RequestBody PostReactionCreationDto postReaction) throws Exception {
@@ -29,6 +32,13 @@ public class PostReactionController {
         postReaction.setIsNewRecord(isNewRecord);
 
         template.convertAndSend("/topic/post/like", postReaction);
+
+// send email to postOwner if like
+        if(postReaction.getIsLike() && isNewRecord != null)
+            emailService.sendSimpleMessage(
+                    null, postReaction.getPostOwner().getEmail(),
+                    "Notification message from Thread",
+                    String.format("Your post from %tD was liked", postReaction.getCreatedAt()));
 
         return optIsNewRecord;
     }

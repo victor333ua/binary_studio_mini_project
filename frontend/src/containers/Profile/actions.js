@@ -1,8 +1,10 @@
 import * as authService from 'src/services/authService';
-import { GET_USER_REJECTED, SET_USER, USER_LOADING, USER_LOGOUT } from './actionTypes';
+import { GET_USER_REJECTED, SET_USER, USER_LOADING, USER_LOGOUT, RESET_ERROR } from './actionTypes';
 import * as userService from '../../services/userService';
 
 const setToken = token => localStorage.setItem('token', token);
+
+export const resetError = () => ({ type: RESET_ERROR });
 
 const setUser = user => ({
   type: SET_USER,
@@ -43,10 +45,6 @@ export const logout = () => {
 
 export const saveUser = user => async dispatch => {
   dispatch(userLoading());
-  try {
-    await userService.save(user);
-  } catch (err) {
-    dispatch(userRejected(err));
-  }
+  await userService.save(user);
   dispatch(setUser(user));
 };

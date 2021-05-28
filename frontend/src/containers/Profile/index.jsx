@@ -12,8 +12,9 @@ import { bindActionCreators } from 'redux';
 import styles from './styles.module.scss';
 import * as imageService from '../../services/imageService';
 import { saveUser } from './actions';
+import PasswordInput from '../../components/PasswordInput';
 
-const Profile = ({ user, status, error, saveUser: save }) => {
+const Profile = ({ user, status, saveUser: save }) => {
   const [isEditMode, setEditMode] = useState(false);
   const [email, setEMail] = useState(user.email);
   const [password, setPassword] = useState('');
@@ -21,18 +22,12 @@ const Profile = ({ user, status, error, saveUser: save }) => {
   const [image, setImage] = useState(getUserImgLink(user.image));
   const [isUploading, setIsUploading] = useState(false);
   const [errorUploadingImage, setErrorUploading] = useState(null);
-  const [isShowPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(null);
 
   const combinedError = error || errorUploadingImage;
-  const iconName = isShowPassword ? 'eye slash' : 'eye';
-  const passwordType = isShowPassword ? 'text' : 'password';
-
-  const changeVisibility = e => {
-    setShowPassword(!isShowPassword);
-    e.preventDefault();
-  };
 
   const handleUploadFile = async ({ target }) => {
+    setErrorUploading(null);
     setIsUploading(true);
     try {
       const { id, link } = await imageService.uploadImage(target.files[0]);
@@ -44,14 +39,28 @@ const Profile = ({ user, status, error, saveUser: save }) => {
     }
   };
 
-  const formSubmit = () => {
+  const setNewValue = fSetNew => value => {
+    setError(null);
+    fSetNew(value);
+  };
+
+  const formSubmit = async () => {
     const userImage = image?.id === user.image?.id ? user.image : image;
     let pass = null;
     if (password !== '') pass = password;
     const newUser = { id: user.id, email, password: pass, username, image: userImage };
-    save(newUser);
+    try {
+      await save(newUser);
+    } catch (err) {
+      setError(err);
+    }
     setEditMode(false);
-    setShowPassword(false);
+  };
+
+  const onCancel = () => {
+    setEMail(user.email);
+    setUserName(user.username);
+    setEditMode(false);
   };
 
   return (
@@ -82,29 +91,19 @@ const Profile = ({ user, status, error, saveUser: save }) => {
             disabled={!isEditMode}
             type="email"
             value={email}
-            onChange={e => setEMail(e.target.value)}
+            onChange={e => setNewValue(setEMail)(e.target.value)}
           />
           <br />
+          <PasswordInput
+            className={styles.passwordInput}
+            eyeClassName={styles.eye}
+            isDisabled={!isEditMode}
+            onChangePassword={setNewValue(setPassword)}
+          />
           <Message
             error
             header="Server error"
             content={combinedError}
-          />
-          <Form.Input
-            className={styles.passwordInput}
-            fluid
-            iconPosition="left"
-            icon="lock"
-            placeholder="Password"
-            type={passwordType}
-            disabled={!isEditMode}
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            action={{ className: styles.actionButton,
-              icon: iconName,
-              disabled: !isEditMode,
-              type: 'button',
-              onClick: e => changeVisibility(e) }}
           />
           <br />
           <br />
@@ -121,9 +120,17 @@ const Profile = ({ user, status, error, saveUser: save }) => {
                   loading={isUploading}
                 >
                   <Icon name="image" />
-                  Attach image
+                  Image
                   <input name="image" type="file" onChange={handleUploadFile} hidden />
                 </Button>
+                <Button
+                  content="Cancel"
+                  type="button"
+                  color="teal"
+                  size="large"
+                  floated="right"
+                  onClick={onCancel}
+                />
                 <Button
                   content="Save"
                   type="submit"
@@ -152,19 +159,16 @@ const Profile = ({ user, status, error, saveUser: save }) => {
 Profile.propTypes = {
   user: PropTypes.objectOf(PropTypes.any),
   status: PropTypes.string.isRequired,
-  error: PropTypes.string,
   saveUser: PropTypes.func.isRequired
 };
 
 Profile.defaultProps = {
-  user: {},
-  error: null
+  user: {}
 };
 
 const mapStateToProps = rootState => ({
   user: rootState.profile.user,
-  status: rootState.profile.status,
-  error: rootState.profile.error
+  status: rootState.profile.status
 });
 
 const actions = { saveUser };

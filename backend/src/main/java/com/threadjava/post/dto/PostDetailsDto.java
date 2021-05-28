@@ -3,7 +3,7 @@ package com.threadjava.post.dto;
 import com.threadjava.comment.dto.CommentDetailsDto;
 import com.threadjava.image.dto.ImageDto;
 import com.threadjava.postReactions.dto.PostReactionDto;
-import com.threadjava.users.dto.UserShortDto;
+import com.threadjava.users.dto.UserDetailsDto;
 import lombok.Data;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,7 +15,7 @@ public class PostDetailsDto {
     private UUID id;
     private String body;
     private ImageDto image;
-    private UserShortDto user;
+    private UserDetailsDto user;
     private Date createdAt;
     private Date updatedAt;
     private long likeCount;

@@ -1,5 +1,6 @@
 package com.threadjava.users;
 
+import com.threadjava.auth.TokenService;
 import com.threadjava.auth.model.AuthUser;
 import com.threadjava.users.dto.UserDetailsDto;
 import com.threadjava.users.model.User;
@@ -33,10 +34,10 @@ public class UsersService implements UserDetailsService {
     }
 
     public void editUser(UserDetailsDto userDto) {
-// image mapped automatically throw image mapper (if exists)
+// image mapped automatically through image mapper (if exists)
         var user = UserMapper.MAPPER.userDtoToUser(userDto);
 
-// it's impossible save separate fields throw save(entity), (necessary to run sql), thus we get old values
+// it's impossible save separate fields through save(entity), (necessary to run sql), thus we get old values
         var oldUser = usersRepository.findById(user.getId())
                 .orElseThrow();
 
@@ -50,6 +51,13 @@ public class UsersService implements UserDetailsService {
     }
 
     public void save(User user) {
+        usersRepository.save(user);
+    }
+
+    public void changePassword(String password) {
+        var id = TokenService.getUserId();
+        var user = usersRepository.findById(id).orElseThrow();
+        user.setPassword(bCryptPasswordEncoder.encode(password));
         usersRepository.save(user);
     }
 }

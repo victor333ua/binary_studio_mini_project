@@ -68,10 +68,10 @@ export const addPost = post => async dispatch => {
   await applyPost(postId)(dispatch);
 };
 
-export const likePost = ({ postId, postOwnerId, isLike, currentUser }) => async dispatch => {
+export const likePost = ({ postId, createdAt, postOwner, isLike, currentUser }) => async dispatch => {
   let isNewRecord;
   try {
-    isNewRecord = await postService.likePost({ postId, postOwnerId, isLike, currentUser });
+    isNewRecord = await postService.likePost({ postId, createdAt, postOwner, isLike, currentUser });
     if (isNewRecord === undefined) isNewRecord = null;
   } catch (err) {
     dispatch(postsRejected(err));

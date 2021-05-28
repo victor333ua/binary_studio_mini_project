@@ -10,9 +10,10 @@ function getFetchArgs(args) {
     headers['Content-Type'] = 'application/json';
     headers.Accept = 'application/json';
   }
-
   if (!args.skipAuthorization) {
-    const token = localStorage.getItem('token');
+    let token;
+    if (!args.resetPassword) token = localStorage.getItem('token');
+    else token = localStorage.getItem('reset');
     headers.Authorization = `Bearer ${token}`;
   }
   let body;

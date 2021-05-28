@@ -24,3 +24,22 @@ export const getCurrentUser = async () => {
     return null;
   }
 };
+
+export const resetPassword = async email => {
+  await callWebApi({
+    endpoint: `/api/auth/reset?email=${email}`,
+    type: 'GET',
+    skipAuthorization: true
+  });
+};
+
+export const changePassword = async (password, token) => {
+  localStorage.setItem('reset', token);
+  await callWebApi({
+    endpoint: '/api/auth/password',
+    type: 'PUT',
+    resetPassword: true,
+    request: { password }
+  });
+  localStorage.setItem('reset', '');
+};

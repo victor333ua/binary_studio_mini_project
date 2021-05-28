@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
@@ -12,9 +11,10 @@ import SharedPost from 'src/containers/SharedPost';
 import NotFound from 'src/scenes/NotFound';
 import PrivateRoute from 'src/containers/PrivateRoute';
 import PublicRoute from 'src/containers/PublicRoute';
-import Notifications from 'src/components/Notifications';
+import Notifications from 'src/containers/Notifications';
 import { logout } from 'src/containers/Profile/actions';
 import PropTypes from 'prop-types';
+import ChangePassword from 'src/components/ChangePassword';
 
 const Routing = ({
   user,
@@ -34,10 +34,11 @@ const Routing = ({
         <PrivateRoute exact path="/" component={Thread}/>
         <PrivateRoute exact path="/profile" component={Profile}/>
         <PrivateRoute path="/share/:postHash" component={SharedPost}/>
+        <PublicRoute path="/reset/:token" component={ChangePassword}/>
         <Route path="*" exact component={NotFound}/>
       </Switch>
     </main>
-    {isAuthorized && <Notifications user={user} />}
+    <Notifications />
   </div>
 );
 

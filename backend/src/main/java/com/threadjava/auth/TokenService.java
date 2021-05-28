@@ -57,17 +57,17 @@ public class TokenService {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(AuthUser userDetails) {
+    public String generateToken(AuthUser userDetails, long expTime) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getId());
+        return createToken(claims, userDetails.getId(), expTime);
     }
 
-    private String createToken(Map<String, Object> claims, UUID subject) {
+    private String createToken(Map<String, Object> claims, UUID subject, long expTime) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject.toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + expTime))
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import validator from 'validator';
-import { Form, Button, Segment, Message } from 'semantic-ui-react';
+// import validator from 'validator';
+import { Form, Button, Segment, Message, Modal } from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import { login } from '../Profile/actions';
+import { login, resetError } from '../Profile/actions';
+import { resetPassword } from '../../services/authService';
+import styles from './styles.module.scss';
+import PasswordInput from '../../components/PasswordInput';
 
 const LoginForm = ({
   login: logIn,
+  resetError: resetErr,
   status,
   error,
   location
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isEmailValid, setIsEmailValid] = useState(true);
-  const [isPasswordValid, setIsPasswordValid] = useState(true);
-  const [isShowPassword, setShowPassword] = useState(false);
+  const [isEmailSent, setIsEmailSent] = useState(false);
+  const [mailError, setMailError] = useState(null);
 
   if (status === 'completed') { // или можно воспольз. isAuthorized
     const oldLocation = location.state?.from || { pathname: '/' };
@@ -25,92 +28,92 @@ const LoginForm = ({
     // в данном случае это не обязательно, т.к. PublicRoute
   }
 
-  const iconName = isShowPassword ? 'eye slash' : 'eye';
-  const passwordType = isShowPassword ? 'text' : 'password';
+  const combinedError = error || mailError;
 
-  const changeVisibility = e => {
-    setShowPassword(!isShowPassword);
-    e.preventDefault();
-  };
-
-  const emailChanged = data => {
-    setEmail(data);
-    setIsEmailValid(true);
-  };
-
-  const passwordChanged = data => {
-    setPassword(data);
-    setIsPasswordValid(true);
+  const setNewData = setNewState => data => {
+    setNewState(data);
+    resetErr();
   };
 
   const handleLoginClick = () => {
-    const isValid = isEmailValid && isPasswordValid;
-    if (!isValid) return;
-
     logIn({ email, password });
     // error captured in action & changed the state
   };
 
+  const reset = async () => {
+    setMailError(null);
+    try {
+      await resetPassword(email);
+    } catch (err) {
+      setMailError(err);
+    }
+    setIsEmailSent(true);
+  };
+
   return (
-    <Form name="loginForm" size="large" error={Boolean(error)} onSubmit={handleLoginClick}>
-      <Segment>
-        <Form.Input
-          fluid
-          icon="at"
-          iconPosition="left"
-          placeholder="Email"
-          type="email"
-          error={!isEmailValid}
-          onChange={ev => emailChanged(ev.target.value)}
-          onBlur={() => setIsEmailValid(validator.isEmail(email))}
-        />
-        <Message
-          error
-          header="Server error"
-          content={error}
-        />
-        <Form.Input
-          fluid
-          placeholder="Password"
-          type={passwordType}
-          error={!isPasswordValid}
-          onChange={ev => passwordChanged(ev.target.value)}
-          onBlur={() => setIsPasswordValid(Boolean(password))}
-          action={{
-            style: { backgroundColor: 'transparent', border: '1px solid rgba(34, 36, 38, .15' },
-            icon: iconName,
-            type: 'button',
-            onClick: e => changeVisibility(e)
-          }}
-        />
-        <Button
-          // onClick={handleLoginClick}
-          type="submit"
-          color="teal"
-          fluid
-          size="large"
-          loading={status === 'loading'}
-          primary
-        >
-          Login
-        </Button>
-      </Segment>
-    </Form>
+    <>
+      <Modal
+        dimmer="inverted"
+        open={isEmailSent}
+        onClose={() => setIsEmailSent(false)}
+      >
+        <Modal.Header>
+          Request for reset password successfully done!
+        </Modal.Header>
+        <Modal.Content>
+          Check your inbox in email server and follow further instructions
+        </Modal.Content>
+        <Modal.Actions>
+          <Button positive onClick={() => setIsEmailSent(false)}>
+            Ok
+          </Button>
+        </Modal.Actions>
+      </Modal>
+      <Form name="loginForm" size="large" error={Boolean(combinedError)} onSubmit={handleLoginClick}>
+        <Segment>
+          <Form.Input
+            fluid
+            icon="at"
+            iconPosition="left"
+            placeholder="Email"
+            type="email"
+            onChange={ev => setNewData(setEmail)(ev.target.value)}
+            // onBlur={() => setIsEmailValid(validator.isEmail(email))}
+          />
+          <Message
+            error
+            header="Server error"
+            content={combinedError}
+          />
+          <PasswordInput onChangePassword={setNewData(setPassword)} />
+          <div>
+            Forgot password?
+            {' '}
+            <span className={styles.reset} onClick={reset}>Reset</span>
+          </div>
+          <Button
+            content="Login"
+            type="submit"
+            color="teal"
+            fluid
+            size="large"
+            loading={status === 'loading'}
+          />
+        </Segment>
+      </Form>
+    </>
   );
 };
 
 LoginForm.propTypes = {
   login: PropTypes.func.isRequired,
+  resetError: PropTypes.func.isRequired,
   status: PropTypes.string.isRequired,
-  error: PropTypes.string,
-  // eslint-disable-next-line react/forbid-prop-types
+  error: PropTypes.string.isRequired,
   location: PropTypes.objectOf(PropTypes.any).isRequired
 };
-LoginForm.defaultProps = {
-  error: ''
-};
 
-const actions = { login };
+const actions = { login, resetError };
 
 const mapStateToProps = ({ profile }) => ({
   status: profile.status,

@@ -40,6 +40,7 @@ module.exports=
     "arrow-parens": ["error", "as-needed"],
     "linebreak-style": 0, //["error", "windows"]
     "react/jsx-tag-spacing": "off",
-    "no-trailing-spaces": "off"
+    "no-trailing-spaces": "off",
+    "jsx-a11y/label-has-associated-control": "off"
   }
 }

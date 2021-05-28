@@ -1,7 +1,7 @@
 package com.threadjava.post.dto;
 
 import com.threadjava.image.dto.ImageDto;
-import com.threadjava.users.dto.UserShortDto;
+import com.threadjava.users.dto.UserDetailsDto;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,5 +12,5 @@ public class PostUpdateDto {
     private UUID id;
     private String body;
     private ImageDto image;
-    private UserShortDto currentUser;
+    private UserDetailsDto currentUser;
 }

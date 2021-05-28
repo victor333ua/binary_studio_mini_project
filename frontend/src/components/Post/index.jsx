@@ -30,7 +30,7 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePos
   useEffect(() => {
     if (body !== text) setText(body);
     if (editImage !== image) setEditImage(image);
-  }, [body, image]);
+  }, [body, editImage, image, text]);
 
   const [isEdit, setEdit] = useState(false);
   const [openDeleteDialog, setDeleteDialog] = useState(false);
@@ -67,7 +67,7 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePos
   };
 
   const onLike = async isLike => {
-    await likePost({ postId: id, postOwnerId: user.id, isLike, currentUser });
+    await likePost({ postId: id, postOwner: user, createdAt, isLike, currentUser });
   };
 
   return (
@@ -180,7 +180,13 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePos
           </div>
         </Card.Content>
       </Card>
-      {isSharePostLink && <SharedPostLink close={() => setSharePostLink(false)} postId={id} />}
+      {isSharePostLink && (
+        <SharedPostLink
+          close={() => setSharePostLink(false)}
+          postId={id}
+          user={currentUser}
+        />
+      )}
     </>
   );
 };

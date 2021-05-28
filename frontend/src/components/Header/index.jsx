@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 import { getUserImgLink } from 'src/helpers/imageHelper';
-import { Header as HeaderUI, Image, Grid, Icon, Button } from 'semantic-ui-react';
+import { Header as HeaderUI, Image, Grid, Icon, Button, Container } from 'semantic-ui-react';
 
 import styles from './styles.module.scss';
 
 const Header = ({ user, logout }) => (
-  <div className={styles.headerWrp}>
-    <Grid centered container columns="2">
+  <Container text className={styles.headerWrp}>
+    <Grid centered container columns="2" style={{ maxWidth: 450 }}>
       <Grid.Column>
         {user && (
           <NavLink exact to="/">
@@ -29,7 +29,7 @@ const Header = ({ user, logout }) => (
         </Button>
       </Grid.Column>
     </Grid>
-  </div>
+  </Container>
 );
 
 Header.propTypes = {

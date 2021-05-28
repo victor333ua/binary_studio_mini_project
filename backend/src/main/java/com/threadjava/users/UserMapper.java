@@ -16,15 +16,6 @@ public abstract class UserMapper {
     @Mapping(target = "password", ignore = true)
     public abstract UserDetailsDto userToUserDetailsDto(User user);
 
-    @Mapping(source = "avatar", target = "image")
-    public abstract UserShortDto userToUserShortDto(User user);
-
-    @Mapping(source = "image.id", target = "avatar.id", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    @Mapping(source = "image", target = "avatar")
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    public abstract User userShortDtoToUser(UserShortDto userShortDto);
-
     @Mapping(source = "image.id", target = "avatar.id", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
     @Mapping(source = "image", target = "avatar")
     @Mapping(target = "createdAt", ignore = true)

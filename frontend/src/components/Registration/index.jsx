@@ -11,6 +11,7 @@ import {
   Segment,
   Message
 } from 'semantic-ui-react';
+import PasswordInput from '../PasswordInput';
 
 const Registration = ({ isAuthorized, registration }) => {
   const [email, setEmail] = useState('');
@@ -80,16 +81,7 @@ const Registration = ({ isAuthorized, registration }) => {
                 onChange={ev => usernameChanged(ev.target.value)}
                 onBlur={() => setUsernameValid(Boolean(username))}
               />
-              <Form.Input
-                fluid
-                icon="lock"
-                iconPosition="left"
-                placeholder="Password"
-                type="password"
-                onChange={ev => passwordChanged(ev.target.value)}
-                error={!isPasswordValid}
-                onBlur={() => setPasswordValid(Boolean(password))}
-              />
+              <PasswordInput onChangePassword={passwordChanged}/>
               <Button type="submit" color="teal" fluid size="large" loading={isLoading} primary>
                 Register
               </Button>

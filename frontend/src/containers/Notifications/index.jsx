@@ -5,9 +5,9 @@ import 'react-notifications/lib/notifications.css';
 import { Client } from '@stomp/stompjs';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { applyPost, deletePostAction, likePostAction, updatePostAction } from '../../containers/Thread/actions';
+import { applyPost, deletePostAction, likePostAction, updatePostAction } from '../Thread/actions';
 // eslint-disable-next-line max-len
-import { addCommentAction, deleteCommentAction, likeCommentAction, updateCommentAction } from '../../containers/ExpandedPost/actions';
+import { addCommentAction, deleteCommentAction, likeCommentAction, updateCommentAction } from '../ExpandedPost/actions';
 
 const Notifications = (
   { user,
@@ -26,10 +26,10 @@ const Notifications = (
   const currentPostId = expandedPost?.id;
 
   const likePostCB = message => {
-    const { isNewRecord, postId, postOwnerId, isLike, currentUser } = JSON.parse(message.body);
+    const { isNewRecord, postId, postOwner, isLike, currentUser } = JSON.parse(message.body);
     // it was my own like
     if (currentUser.id === id) return;
-    if (postOwnerId === id && isLike && isNewRecord != null) NotificationManager.info('Your post was liked!');
+    if (postOwner.id === id && isLike && isNewRecord != null) NotificationManager.info('Your post was liked!');
     likePost({ postId, isLike, isNewRecord, currentUser });
   };
 
@@ -131,7 +131,7 @@ const Notifications = (
 
   useEffect(() => {
     const stompClient = containerForStompClient.current;
-    if (stompClient === null || !isBrokerConnected) return undefined;
+    if (stompClient === null || !isBrokerConnected || user === undefined) return undefined;
 
     const postLike = stompClient.subscribe('/topic/post/like', likePostCB);
     const postNew = stompClient.subscribe('/topic/post/new', getPostCB);
@@ -144,11 +144,12 @@ const Notifications = (
       postNew.unsubscribe();
       postDelete.unsubscribe();
     };
+    // eslint-disable-next-line
   }, [user, isBrokerConnected]);
 
   useEffect(() => {
     const stompClient = containerForStompClient.current;
-    if (stompClient === null || !isBrokerConnected) return undefined;
+    if (!stompClient || !isBrokerConnected || expandedPost === undefined || user === undefined) return undefined;
 
     const commentLike = stompClient.subscribe('/topic/comments/like', likeCommentCB);
     const commentAdd = stompClient.subscribe('/topic/comments/add', addCommentCB);
@@ -160,6 +161,7 @@ const Notifications = (
       commentUpdate.unsubscribe();
       commentDelete.unsubscribe();
     };
+    // eslint-disable-next-line
   }, [user, expandedPost, isBrokerConnected]);
 
   return (
@@ -169,7 +171,7 @@ const Notifications = (
     </>
   );
 };
-Notifications.defaultProps = { user: {}, expandedPost: {} };
+Notifications.defaultProps = { user: undefined, expandedPost: undefined };
 
 Notifications.propTypes = {
   user: PropTypes.objectOf(PropTypes.any),
@@ -185,6 +187,7 @@ Notifications.propTypes = {
 };
 
 const mapStateToProps = rootState => ({
+  user: rootState.profile.user,
   expandedPost: rootState.posts.expandedPost
 });
 

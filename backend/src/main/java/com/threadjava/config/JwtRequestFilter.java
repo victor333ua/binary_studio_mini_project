@@ -47,9 +47,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(String header) throws Exception {
         var tokenString = header.replace(TOKEN_PREFIX, "");
         // parse the token.
+        if (tokenService.isTokenExpired(tokenString))  throw new Exception("token expired");
         String userId = tokenService.extractUserId(tokenString);
         if (userId == null) throw new Exception("userId from token == null");
-        if (tokenService.isTokenExpired(tokenString))  throw new Exception("token expired");
 
         return new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());
     }
