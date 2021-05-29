@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Thread from 'src/containers/Thread';
 import LoginPage from 'src/components/LoginPage';
-import RegistrationPage from 'src/containers/RegistrationPage';
+import RegistrationPage from 'src/components/RegistrationPage';
 import Profile from 'src/containers/Profile';
 import Header from 'src/components/Header';
 import SharedPost from 'src/containers/SharedPost';

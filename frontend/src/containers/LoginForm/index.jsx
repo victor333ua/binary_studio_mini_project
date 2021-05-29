@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-// import validator from 'validator';
+import validator from 'validator';
 import { Form, Button, Segment, Message, Modal } from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -21,6 +21,7 @@ const LoginForm = ({
   const [password, setPassword] = useState('');
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [mailError, setMailError] = useState(null);
+  const [isEmailValid, setIsEmailValid] = useState(true);
 
   if (status === 'completed') { // или можно воспольз. isAuthorized
     const oldLocation = location.state?.from || { pathname: '/' };
@@ -32,10 +33,11 @@ const LoginForm = ({
 
   const setNewData = setNewState => data => {
     setNewState(data);
-    resetErr();
+    resetErr(); // set error to null in state to hide error message
   };
 
   const handleLoginClick = () => {
+    if (!isEmailValid) return;
     logIn({ email, password });
     // error captured in action & changed the state
   };
@@ -71,19 +73,20 @@ const LoginForm = ({
       </Modal>
       <Form name="loginForm" size="large" error={Boolean(combinedError)} onSubmit={handleLoginClick}>
         <Segment>
+          <Message
+            error
+            header="Server error"
+            content={combinedError}
+          />
           <Form.Input
             fluid
             icon="at"
             iconPosition="left"
             placeholder="Email"
             type="email"
+            error={!isEmailValid}
             onChange={ev => setNewData(setEmail)(ev.target.value)}
-            // onBlur={() => setIsEmailValid(validator.isEmail(email))}
-          />
-          <Message
-            error
-            header="Server error"
-            content={combinedError}
+            onBlur={() => setIsEmailValid(validator.isEmail(email))}
           />
           <PasswordInput onChangePassword={setNewData(setPassword)} />
           <div>
@@ -109,8 +112,11 @@ LoginForm.propTypes = {
   login: PropTypes.func.isRequired,
   resetError: PropTypes.func.isRequired,
   status: PropTypes.string.isRequired,
-  error: PropTypes.string.isRequired,
+  error: PropTypes.string,
   location: PropTypes.objectOf(PropTypes.any).isRequired
+};
+LoginForm.defaultProps = {
+  error: null
 };
 
 const actions = { login, resetError };

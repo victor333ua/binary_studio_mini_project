@@ -1,5 +1,6 @@
 package com.threadjava.post;
 
+import com.threadjava.auth.TokenService;
 import com.threadjava.comment.CommentRepository;
 import com.threadjava.comment.CommentService;
 import com.threadjava.image.ImageMapper;
@@ -25,16 +26,25 @@ public class PostsService {
     @Autowired
     private PostReactionService postReactionService;
 
-    public List<PostDetailsDto> getAllPosts(Integer from, Integer count, UUID userId, Boolean isMine) {
+    public List<PostDetailsDto> getAllPosts(Integer from, Integer count, Integer selector) {
 
         var pageable = PageRequest.of(from / count, count);
-        List<PostDetailsQueryResult> list;
+        List<PostDetailsQueryResult> list = null;
+        var userId = TokenService.getUserId();
 
-        if(userId == null) list = postsCrudRepository.getAllPostsMyOrNot(from, count, userId, isMine);
-        else {
-            if(isMine == null)  list = postsCrudRepository.findAllPostsWithMyLikes(userId, pageable);
-            else
-                list = postsCrudRepository.getAllPostsMyOrNot(from, count, userId, isMine);
+        switch(selector) {
+            case 0:
+                list = postsCrudRepository.getAllPostsMyOrNot(from, count, null, null);
+                break;
+            case 1:
+                list = postsCrudRepository.getAllPostsMyOrNot(from, count, userId, true);
+                break;
+            case 2:
+                list = postsCrudRepository.getAllPostsMyOrNot(from, count, userId, false);
+                break;
+            case 3:
+                list = postsCrudRepository.findAllPostsWithMyLikes(userId, pageable);
+                break;
         }
         return list
                 .stream()

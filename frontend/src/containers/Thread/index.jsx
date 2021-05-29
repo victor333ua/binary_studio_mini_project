@@ -1,25 +1,25 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ExpandedPost from 'src/containers/ExpandedPost';
 import Post from 'src/components/Post';
 import AddPost from 'src/components/AddPost';
-import { Checkbox, Container, Grid, Loader, Segment } from 'semantic-ui-react';
+import { Container, Grid, Loader, Segment } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
-import { loadPosts, loadMorePosts, likePost, addPost, updatePost, deletePost } from './actions';
+import { addPost, deletePost, likePost, loadMorePosts, loadPosts, updatePost } from './actions';
 import { toggleExpandedPost } from '../ExpandedPost/actions';
 
 import styles from './styles.module.scss';
 import CustomCheckbox from '../../components/CustomCheckbox';
 
 const postsFilter = {
-  userId: undefined,
-  isMine: undefined,
+  selector: 0,
   from: 0,
   count: 10
 };
+const label = ['my own posts', "other people's", 'with my like'];
 
 const Thread = ({
   user,
@@ -28,56 +28,41 @@ const Thread = ({
   posts = [],
   expandedPost,
   hasMorePosts,
+  selector,
   addPost: createPost,
   likePost: like,
-  toggleExpandedPost: toggle,
+  toggleExpandedPost: onExpPost,
   deletePost: cut,
   updatePost: update
 }) => {
-  const [sharedPostId, setSharedPostId] = useState(undefined);
-  const [showOwnPosts, setShowOwnPosts] = useState(false);
-  const [showAnothersPosts, setShowAnothersPosts] = useState(false);
-  const [showPostsWithMyLikes, setShowPostsWithMyLikes] = useState(false);
+  // after redirect we read state from redux and set switches accordingly
+  const [shifter, setShifter] = useState([...Array(3)].map(
+    (item, index) => selector !== 0 && index === (selector - 1)
+  ));
 
-  const toggleShowOwnPosts = () => {
-    setShowOwnPosts(!showOwnPosts);
-    setShowAnothersPosts(false);
-    setShowPostsWithMyLikes(false);
-    // we have old value of showOwnPosts here yet
-    postsFilter.userId = showOwnPosts ? undefined : user.id;
-    postsFilter.isMine = true;
-    postsFilter.from = 0;
-    load(postsFilter);
-    postsFilter.from = postsFilter.count; // for the next scroll
+  // simultaneously only one switch can be on
+  const toggle = i => () => {
+    setShifter(shifter.map((item, index) => (i === index ? !item : false)));
   };
-
-  const toggleShowAnothersPosts = () => {
-    setShowAnothersPosts(!showAnothersPosts);
-    setShowPostsWithMyLikes(false);
-    setShowOwnPosts(false);
-    postsFilter.userId = showAnothersPosts ? undefined : user.id;
-    postsFilter.isMine = false;
+  useLayoutEffect(() => {
     postsFilter.from = 0;
-    load(postsFilter);
-    postsFilter.from = postsFilter.count; // for the next scroll
-  };
-
-  const toggleShowPostsWithMyLikes = () => {
-    setShowPostsWithMyLikes(!showPostsWithMyLikes);
-    setShowAnothersPosts(false);
-    setShowOwnPosts(false);
-    postsFilter.userId = showPostsWithMyLikes ? undefined : user.id;
-    postsFilter.isMine = undefined;
-    postsFilter.from = 0;
-    load(postsFilter);
-    postsFilter.from = postsFilter.count; // for the next scroll
-  };
+    postsFilter.selector = shifter.findIndex(item => item) + 1;
+    const getPosts = async () => { await load(postsFilter); };
+    getPosts();
+    postsFilter.from = postsFilter.count;
+  }, [shifter, load]);
 
   const getMorePosts = () => {
     loadMore(postsFilter);
     const { from, count } = postsFilter;
     postsFilter.from = from + count;
   };
+
+  const switchesList = [0, 1, 2].map(index => (
+    <Grid.Column key={label[index]}>
+      <CustomCheckbox label={label[index]} checked={shifter[index]} onChange={toggle(index)}/>
+    </Grid.Column>
+  ));
 
   return (
     <Container text className={styles.threadContent}>
@@ -86,15 +71,7 @@ const Thread = ({
       </div>
       <Segment className={styles.toolbar}>
         <Grid textAlign="center" columns={3} >
-          <Grid.Column >
-            <CustomCheckbox label="my own" checked={showOwnPosts} onChange={toggleShowOwnPosts}/>
-          </Grid.Column>
-          <Grid.Column >
-            <CustomCheckbox label="other's" checked={showAnothersPosts} onChange={toggleShowAnothersPosts}/>
-          </Grid.Column>
-          <Grid.Column >
-            <CustomCheckbox label="with my like" checked={showPostsWithMyLikes} onChange={toggleShowPostsWithMyLikes}/>
-          </Grid.Column>
+          {switchesList}
         </Grid>
       </Segment>
       <InfiniteScroll
@@ -108,7 +85,7 @@ const Thread = ({
             user={user}
             post={post}
             likePost={like}
-            toggleExpandedPost={toggle}
+            toggleExpandedPost={onExpPost}
             deletePost={cut}
             updatePost={update}
             key={post.id}
@@ -124,6 +101,7 @@ Thread.propTypes = {
   posts: PropTypes.arrayOf(PropTypes.object),
   hasMorePosts: PropTypes.bool,
   expandedPost: PropTypes.objectOf(PropTypes.any),
+  selector: PropTypes.number.isRequired,
   user: PropTypes.objectOf(PropTypes.any),
   loadPosts: PropTypes.func.isRequired,
   loadMorePosts: PropTypes.func.isRequired,
@@ -145,6 +123,7 @@ const mapStateToProps = rootState => ({
   posts: rootState.posts.posts,
   hasMorePosts: rootState.posts.hasMorePosts,
   expandedPost: rootState.posts.expandedPost,
+  selector: rootState.posts.selector,
   user: rootState.profile.user
 });
 

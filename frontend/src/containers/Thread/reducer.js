@@ -18,13 +18,14 @@ import {
 
 import { addLike } from '../../helpers/likesHelper';
 
-export default (state = {}, action) => {
+export default (state = { selector: 0 }, action) => {
   switch (action.type) {
     case SET_ALL_POSTS:
       return {
         ...state,
-        posts: action.posts,
-        hasMorePosts: Boolean(action.posts.length)
+        posts: action.payload.posts,
+        selector: action.payload.selector,
+        hasMorePosts: Boolean(action.payload.posts.length)
       };
     case LOAD_MORE_POSTS:
       return {

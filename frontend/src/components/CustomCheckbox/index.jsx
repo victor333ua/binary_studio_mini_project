@@ -19,12 +19,12 @@ const CustomCheckbox = ({ label, checked, onChange }) => (
 );
 CustomCheckbox.propTypes = {
   label: PropTypes.string,
-  checked: PropTypes.func,
+  checked: PropTypes.bool,
   onChange: PropTypes.func
 };
 CustomCheckbox.defaultProps = {
   label: '',
-  checked: null,
+  checked: false,
   onChange: null
 };
 export default CustomCheckbox;

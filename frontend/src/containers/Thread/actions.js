@@ -15,9 +15,9 @@ const postsRejected = error => ({
   error
 });
 
-const setPostsAction = posts => ({
+const setPostsAction = (posts, selector) => ({
   type: SET_ALL_POSTS,
-  posts
+  payload: { posts, selector }
 });
 
 const addMorePostsAction = posts => ({
@@ -47,7 +47,7 @@ export const updatePostAction = ({ id, body, image }) => ({
 
 export const loadPosts = filter => async dispatch => {
   const posts = await postService.getAllPosts(filter);
-  dispatch(setPostsAction(posts));
+  dispatch(setPostsAction(posts, filter.selector));
 };
 
 export const loadMorePosts = filter => async (dispatch, getRootState) => {
