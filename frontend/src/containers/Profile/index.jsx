@@ -9,6 +9,7 @@ import {
   Image, Message
 } from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
+import validator from 'validator';
 import styles from './styles.module.scss';
 import * as imageService from '../../services/imageService';
 import { saveUser } from './actions';
@@ -17,12 +18,13 @@ import PasswordInput from '../../components/PasswordInput';
 const Profile = ({ user, status, saveUser: save }) => {
   const [isEditMode, setEditMode] = useState(false);
   const [email, setEMail] = useState(user.email);
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState(null);
   const [username, setUserName] = useState(user.username);
   const [image, setImage] = useState(getUserImgLink(user.image));
   const [isUploading, setIsUploading] = useState(false);
   const [errorUploadingImage, setErrorUploading] = useState(null);
   const [error, setError] = useState(null);
+  const [isEmailValid, setIsEmailValid] = useState(true);
 
   const combinedError = error || errorUploadingImage;
 
@@ -33,7 +35,7 @@ const Profile = ({ user, status, saveUser: save }) => {
       const { id, link } = await imageService.uploadImage(target.files[0]);
       setImage({ id, link });
     } catch (err) {
-      setErrorUploading(err);
+      setErrorUploading(err.message);
     } finally {
       setIsUploading(false);
     }
@@ -45,14 +47,13 @@ const Profile = ({ user, status, saveUser: save }) => {
   };
 
   const formSubmit = async () => {
+    if (!isEmailValid) return;
     const userImage = image?.id === user.image?.id ? user.image : image;
-    let pass = null;
-    if (password !== '') pass = password;
-    const newUser = { id: user.id, email, password: pass, username, image: userImage };
+    const newUser = { ...user, email, password, username, image: userImage };
     try {
       await save(newUser);
     } catch (err) {
-      setError(err);
+      setError(err.message);
     }
     setEditMode(false);
   };
@@ -91,7 +92,9 @@ const Profile = ({ user, status, saveUser: save }) => {
             disabled={!isEditMode}
             type="email"
             value={email}
+            error={!isEmailValid}
             onChange={e => setNewValue(setEMail)(e.target.value)}
+            onBlur={() => setIsEmailValid(validator.isEmail(email))}
           />
           <br />
           <PasswordInput

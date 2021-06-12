@@ -3,7 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.18">
     <root id="1">
       <ServerVersion>12.6</ServerVersion>
-      <StartupTime>1620109934</StartupTime>
+      <StartupTime>1621326531</StartupTime>
     </root>
     <database id="2" parent="1" name="concurrency-data">
       <ObjectId>17353</ObjectId>
@@ -29,8 +29,10 @@
     <database id="7" parent="1" name="threaddb">
       <ObjectId>16393</ObjectId>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>3109</IntrospectionStateNumber>
+      <IntrospectionStateNumber>3341</IntrospectionStateNumber>
       <Current>1</Current>
+      <Relations>sequence|table|34684|34686|1
+</Relations>
     </database>
     <role id="8" parent="1" name="pg_execute_server_program">
       <ObjectId>4571</ObjectId>
@@ -81,7 +83,7 @@
       <Comment>standard public schema</Comment>
       <StateNumber>276</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>3110</IntrospectionStateNumber>
+      <IntrospectionStateNumber>3342</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <access-method id="20" parent="7" name="heap">
@@ -151,425 +153,521 @@
     <language id="29" parent="7" name="internal"/>
     <language id="30" parent="7" name="plpgsql"/>
     <language id="31" parent="7" name="sql"/>
-    <table id="32" parent="19" name="comment_reactions">
-      <ObjectId>34556</ObjectId>
+    <sequence id="32" parent="19" name="roles_id_seq">
+      <ObjectId>34684</ObjectId>
+      <StateNumber>3314</StateNumber>
       <Owner>postgres</Owner>
-      <StateNumber>3089</StateNumber>
-    </table>
-    <table id="33" parent="19" name="comments">
-      <ObjectId>34561</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <CacheSize>1</CacheSize>
+      <DataType>bigint|0s</DataType>
+    </sequence>
+    <table id="33" parent="19" name="comment_reactions">
+      <ObjectId>34648</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>3090</StateNumber>
+      <StateNumber>3318</StateNumber>
     </table>
-    <table id="34" parent="19" name="images">
-      <ObjectId>34570</ObjectId>
+    <table id="34" parent="19" name="comments">
+      <ObjectId>34653</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>3095</StateNumber>
+      <StateNumber>3319</StateNumber>
     </table>
-    <table id="35" parent="19" name="post_reactions">
-      <ObjectId>34578</ObjectId>
+    <table id="35" parent="19" name="images">
+      <ObjectId>34662</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>3093</StateNumber>
+      <StateNumber>3324</StateNumber>
     </table>
-    <table id="36" parent="19" name="posts">
-      <ObjectId>34583</ObjectId>
+    <table id="36" parent="19" name="post_reactions">
+      <ObjectId>34670</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>3091</StateNumber>
+      <StateNumber>3322</StateNumber>
     </table>
-    <table id="37" parent="19" name="users">
-      <ObjectId>34592</ObjectId>
+    <table id="37" parent="19" name="posts">
+      <ObjectId>34675</ObjectId>
       <Owner>postgres</Owner>
-      <StateNumber>3089</StateNumber>
+      <StateNumber>3320</StateNumber>
     </table>
-    <column id="38" parent="32" name="is_like">
+    <table id="38" parent="19" name="roles">
+      <ObjectId>34686</ObjectId>
+      <Owner>postgres</Owner>
+      <StateNumber>3326</StateNumber>
+    </table>
+    <table id="39" parent="19" name="user_roles">
+      <ObjectId>34692</ObjectId>
+      <Owner>postgres</Owner>
+      <StateNumber>3326</StateNumber>
+    </table>
+    <table id="40" parent="19" name="users">
+      <ObjectId>34697</ObjectId>
+      <Owner>postgres</Owner>
+      <StateNumber>3318</StateNumber>
+    </table>
+    <column id="41" parent="33" name="is_like">
       <Position>1</Position>
       <DataType>boolean|0s</DataType>
-      <StateNumber>3082</StateNumber>
+      <StateNumber>3309</StateNumber>
       <TypeId>16</TypeId>
     </column>
-    <column id="39" parent="32" name="user_id">
+    <column id="42" parent="33" name="user_id">
       <Position>2</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>3082</StateNumber>
+      <StateNumber>3309</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="40" parent="32" name="comment_id">
+    <column id="43" parent="33" name="comment_id">
       <Position>3</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>3082</StateNumber>
+      <StateNumber>3309</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <index id="41" parent="32" name="comment_reactions_pkey">
-      <ObjectId>34559</ObjectId>
-      <StateNumber>3082</StateNumber>
+    <index id="44" parent="33" name="comment_reactions_pkey">
+      <ObjectId>34651</ObjectId>
+      <StateNumber>3309</StateNumber>
       <ColNames>comment_id
 user_id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="42" parent="32" name="comment_reactions_pkey">
-      <ObjectId>34560</ObjectId>
-      <StateNumber>3082</StateNumber>
+    <key id="45" parent="33" name="comment_reactions_pkey">
+      <ObjectId>34652</ObjectId>
+      <StateNumber>3309</StateNumber>
       <ColNames>comment_id
 user_id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>comment_reactions_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="43" parent="32" name="fk2t2mv78fm49m4lni9gih7kkaa">
-      <ObjectId>34602</ObjectId>
-      <StateNumber>3089</StateNumber>
+    <foreign-key id="46" parent="33" name="fk2t2mv78fm49m4lni9gih7kkaa">
+      <ObjectId>34707</ObjectId>
+      <StateNumber>3318</StateNumber>
       <ColNames>user_id</ColNames>
-      <RefTableId>34592</RefTableId>
+      <RefTableId>34697</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>users</RefTableName>
       <RefKeyName>users_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="44" parent="32" name="fkfb7jmhiih0qcj4sykg2pcip35">
-      <ObjectId>34607</ObjectId>
-      <StateNumber>3090</StateNumber>
+    <foreign-key id="47" parent="33" name="fkfb7jmhiih0qcj4sykg2pcip35">
+      <ObjectId>34712</ObjectId>
+      <StateNumber>3319</StateNumber>
       <ColNames>comment_id</ColNames>
-      <RefTableId>34561</RefTableId>
+      <RefTableId>34653</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>comments</RefTableName>
       <RefKeyName>comments_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="45" parent="33" name="id">
+    <column id="48" parent="34" name="id">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>3083</StateNumber>
+      <StateNumber>3310</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="46" parent="33" name="timestamp">
+    <column id="49" parent="34" name="timestamp">
       <Position>2</Position>
       <DataType>timestamp|0s</DataType>
-      <StateNumber>3083</StateNumber>
+      <StateNumber>3310</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <column id="47" parent="33" name="updated_on">
+    <column id="50" parent="34" name="updated_on">
       <Position>3</Position>
       <DataType>timestamp|0s</DataType>
-      <StateNumber>3083</StateNumber>
+      <StateNumber>3310</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <column id="48" parent="33" name="body">
+    <column id="51" parent="34" name="body">
       <Position>4</Position>
       <DataType>text|0s</DataType>
-      <StateNumber>3083</StateNumber>
+      <StateNumber>3310</StateNumber>
       <TypeId>25</TypeId>
     </column>
-    <column id="49" parent="33" name="deleted">
+    <column id="52" parent="34" name="deleted">
       <Position>5</Position>
       <DataType>boolean|0s</DataType>
-      <StateNumber>3083</StateNumber>
+      <StateNumber>3310</StateNumber>
       <DefaultExpression>false</DefaultExpression>
       <TypeId>16</TypeId>
     </column>
-    <column id="50" parent="33" name="post_id">
+    <column id="53" parent="34" name="post_id">
       <Position>6</Position>
       <DataType>uuid|0s</DataType>
-      <StateNumber>3083</StateNumber>
+      <StateNumber>3310</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="51" parent="33" name="user_id">
+    <column id="54" parent="34" name="user_id">
       <Position>7</Position>
       <DataType>uuid|0s</DataType>
-      <StateNumber>3083</StateNumber>
+      <StateNumber>3310</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <index id="52" parent="33" name="comments_pkey">
-      <ObjectId>34568</ObjectId>
-      <StateNumber>3083</StateNumber>
+    <index id="55" parent="34" name="comments_pkey">
+      <ObjectId>34660</ObjectId>
+      <StateNumber>3310</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="53" parent="33" name="comments_pkey">
-      <ObjectId>34569</ObjectId>
-      <StateNumber>3083</StateNumber>
+    <key id="56" parent="34" name="comments_pkey">
+      <ObjectId>34661</ObjectId>
+      <StateNumber>3310</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>comments_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="54" parent="33" name="fkh4c7lvsc298whoyd4w9ta25cr">
-      <ObjectId>34612</ObjectId>
-      <StateNumber>3091</StateNumber>
+    <foreign-key id="57" parent="34" name="fkh4c7lvsc298whoyd4w9ta25cr">
+      <ObjectId>34717</ObjectId>
+      <StateNumber>3320</StateNumber>
       <ColNames>post_id</ColNames>
-      <RefTableId>34583</RefTableId>
+      <RefTableId>34675</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>posts</RefTableName>
       <RefKeyName>posts_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="55" parent="33" name="fk8omq0tc18jd43bu5tjh6jvraq">
-      <ObjectId>34617</ObjectId>
-      <StateNumber>3092</StateNumber>
+    <foreign-key id="58" parent="34" name="fk8omq0tc18jd43bu5tjh6jvraq">
+      <ObjectId>34722</ObjectId>
+      <StateNumber>3321</StateNumber>
       <ColNames>user_id</ColNames>
-      <RefTableId>34592</RefTableId>
+      <RefTableId>34697</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>users</RefTableName>
       <RefKeyName>users_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="56" parent="34" name="id">
+    <column id="59" parent="35" name="id">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>3084</StateNumber>
+      <StateNumber>3311</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="57" parent="34" name="timestamp">
+    <column id="60" parent="35" name="timestamp">
       <Position>2</Position>
       <DataType>timestamp|0s</DataType>
-      <StateNumber>3084</StateNumber>
+      <StateNumber>3311</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <column id="58" parent="34" name="updated_on">
+    <column id="61" parent="35" name="updated_on">
       <Position>3</Position>
       <DataType>timestamp|0s</DataType>
-      <StateNumber>3084</StateNumber>
+      <StateNumber>3311</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <column id="59" parent="34" name="delete_hash">
+    <column id="62" parent="35" name="delete_hash">
       <Position>4</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>3084</StateNumber>
+      <StateNumber>3311</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="60" parent="34" name="link">
+    <column id="63" parent="35" name="link">
       <Position>5</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>3084</StateNumber>
+      <StateNumber>3311</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <index id="61" parent="34" name="images_pkey">
-      <ObjectId>34576</ObjectId>
-      <StateNumber>3084</StateNumber>
+    <index id="64" parent="35" name="images_pkey">
+      <ObjectId>34668</ObjectId>
+      <StateNumber>3311</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="62" parent="34" name="images_pkey">
-      <ObjectId>34577</ObjectId>
-      <StateNumber>3084</StateNumber>
+    <key id="65" parent="35" name="images_pkey">
+      <ObjectId>34669</ObjectId>
+      <StateNumber>3311</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>images_pkey</UnderlyingIndexName>
     </key>
-    <column id="63" parent="35" name="post_id">
+    <column id="66" parent="36" name="post_id">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>3085</StateNumber>
+      <StateNumber>3312</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="64" parent="35" name="user_id">
+    <column id="67" parent="36" name="user_id">
       <Position>2</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>3085</StateNumber>
+      <StateNumber>3312</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="65" parent="35" name="is_like">
+    <column id="68" parent="36" name="is_like">
       <Position>3</Position>
       <DataType>boolean|0s</DataType>
-      <StateNumber>3085</StateNumber>
+      <StateNumber>3312</StateNumber>
       <TypeId>16</TypeId>
     </column>
-    <index id="66" parent="35" name="post_reactions_pkey">
-      <ObjectId>34581</ObjectId>
-      <StateNumber>3085</StateNumber>
+    <index id="69" parent="36" name="post_reactions_pkey">
+      <ObjectId>34673</ObjectId>
+      <StateNumber>3312</StateNumber>
       <ColNames>post_id
 user_id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="67" parent="35" name="post_reactions_pkey">
-      <ObjectId>34582</ObjectId>
-      <StateNumber>3085</StateNumber>
+    <key id="70" parent="36" name="post_reactions_pkey">
+      <ObjectId>34674</ObjectId>
+      <StateNumber>3312</StateNumber>
       <ColNames>post_id
 user_id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>post_reactions_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="68" parent="35" name="fkq9ivjiqt8flog43og7gtmoyqw">
-      <ObjectId>34622</ObjectId>
-      <StateNumber>3093</StateNumber>
+    <foreign-key id="71" parent="36" name="fkq9ivjiqt8flog43og7gtmoyqw">
+      <ObjectId>34727</ObjectId>
+      <StateNumber>3322</StateNumber>
       <ColNames>post_id</ColNames>
-      <RefTableId>34583</RefTableId>
+      <RefTableId>34675</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>posts</RefTableName>
       <RefKeyName>posts_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="69" parent="35" name="fkptar8f3u0qt7ssjksu2hxme03">
-      <ObjectId>34627</ObjectId>
-      <StateNumber>3094</StateNumber>
+    <foreign-key id="72" parent="36" name="fkptar8f3u0qt7ssjksu2hxme03">
+      <ObjectId>34732</ObjectId>
+      <StateNumber>3323</StateNumber>
       <ColNames>user_id</ColNames>
-      <RefTableId>34592</RefTableId>
+      <RefTableId>34697</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>users</RefTableName>
       <RefKeyName>users_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="70" parent="36" name="id">
+    <column id="73" parent="37" name="id">
       <Position>1</Position>
       <DataType>uuid|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>3086</StateNumber>
+      <StateNumber>3313</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="71" parent="36" name="timestamp">
+    <column id="74" parent="37" name="timestamp">
       <Position>2</Position>
       <DataType>timestamp|0s</DataType>
-      <StateNumber>3086</StateNumber>
+      <StateNumber>3313</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <column id="72" parent="36" name="updated_on">
+    <column id="75" parent="37" name="updated_on">
       <Position>3</Position>
       <DataType>timestamp|0s</DataType>
-      <StateNumber>3086</StateNumber>
+      <StateNumber>3313</StateNumber>
       <TypeId>1114</TypeId>
     </column>
-    <column id="73" parent="36" name="body">
+    <column id="76" parent="37" name="body">
       <Position>4</Position>
       <DataType>text|0s</DataType>
-      <StateNumber>3086</StateNumber>
+      <StateNumber>3313</StateNumber>
       <TypeId>25</TypeId>
     </column>
-    <column id="74" parent="36" name="deleted">
+    <column id="77" parent="37" name="deleted">
       <Position>5</Position>
       <DataType>boolean|0s</DataType>
-      <StateNumber>3086</StateNumber>
+      <StateNumber>3313</StateNumber>
       <DefaultExpression>false</DefaultExpression>
       <TypeId>16</TypeId>
     </column>
-    <column id="75" parent="36" name="image_id">
+    <column id="78" parent="37" name="image_id">
       <Position>6</Position>
       <DataType>uuid|0s</DataType>
-      <StateNumber>3086</StateNumber>
+      <StateNumber>3313</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <column id="76" parent="36" name="user_id">
+    <column id="79" parent="37" name="user_id">
       <Position>7</Position>
       <DataType>uuid|0s</DataType>
-      <StateNumber>3086</StateNumber>
+      <StateNumber>3313</StateNumber>
       <TypeId>2950</TypeId>
     </column>
-    <index id="77" parent="36" name="posts_pkey">
-      <ObjectId>34590</ObjectId>
-      <StateNumber>3086</StateNumber>
+    <index id="80" parent="37" name="posts_pkey">
+      <ObjectId>34682</ObjectId>
+      <StateNumber>3313</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="78" parent="36" name="posts_pkey">
-      <ObjectId>34591</ObjectId>
-      <StateNumber>3086</StateNumber>
+    <key id="81" parent="37" name="posts_pkey">
+      <ObjectId>34683</ObjectId>
+      <StateNumber>3313</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>posts_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="79" parent="36" name="fkdt44ngxibfjiwb1w59qd23xmw">
-      <ObjectId>34632</ObjectId>
-      <StateNumber>3095</StateNumber>
+    <foreign-key id="82" parent="37" name="fkdt44ngxibfjiwb1w59qd23xmw">
+      <ObjectId>34737</ObjectId>
+      <StateNumber>3324</StateNumber>
       <ColNames>image_id</ColNames>
-      <RefTableId>34570</RefTableId>
+      <RefTableId>34662</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>images</RefTableName>
       <RefKeyName>images_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <foreign-key id="80" parent="36" name="fk5lidm6cqbc7u4xhqpxm898qme">
-      <ObjectId>34637</ObjectId>
-      <StateNumber>3096</StateNumber>
+    <foreign-key id="83" parent="37" name="fk5lidm6cqbc7u4xhqpxm898qme">
+      <ObjectId>34742</ObjectId>
+      <StateNumber>3325</StateNumber>
       <ColNames>user_id</ColNames>
-      <RefTableId>34592</RefTableId>
+      <RefTableId>34697</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>users</RefTableName>
       <RefKeyName>users_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="81" parent="37" name="id">
+    <column id="84" parent="38" name="id">
       <Position>1</Position>
-      <DataType>uuid|0s</DataType>
+      <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
-      <StateNumber>3087</StateNumber>
-      <TypeId>2950</TypeId>
+      <StateNumber>3314</StateNumber>
+      <DefaultExpression>nextval(&apos;roles_id_seq&apos;::regclass)</DefaultExpression>
+      <TypeId>20</TypeId>
     </column>
-    <column id="82" parent="37" name="timestamp">
+    <column id="85" parent="38" name="name">
       <Position>2</Position>
-      <DataType>timestamp|0s</DataType>
-      <StateNumber>3087</StateNumber>
-      <TypeId>1114</TypeId>
-    </column>
-    <column id="83" parent="37" name="updated_on">
-      <Position>3</Position>
-      <DataType>timestamp|0s</DataType>
-      <StateNumber>3087</StateNumber>
-      <TypeId>1114</TypeId>
-    </column>
-    <column id="84" parent="37" name="email">
-      <Position>4</Position>
       <DataType>varchar(255)|0s</DataType>
-      <StateNumber>3087</StateNumber>
+      <StateNumber>3314</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="85" parent="37" name="password">
-      <Position>5</Position>
-      <DataType>varchar(255)|0s</DataType>
-      <StateNumber>3087</StateNumber>
-      <TypeId>1043</TypeId>
-    </column>
-    <column id="86" parent="37" name="username">
-      <Position>6</Position>
-      <DataType>varchar(255)|0s</DataType>
-      <StateNumber>3087</StateNumber>
-      <TypeId>1043</TypeId>
-    </column>
-    <column id="87" parent="37" name="avatar_id">
-      <Position>7</Position>
-      <DataType>uuid|0s</DataType>
-      <StateNumber>3087</StateNumber>
-      <TypeId>2950</TypeId>
-    </column>
-    <index id="88" parent="37" name="users_pkey">
-      <ObjectId>34598</ObjectId>
-      <StateNumber>3087</StateNumber>
+    <index id="86" parent="38" name="roles_pkey">
+      <ObjectId>34690</ObjectId>
+      <StateNumber>3314</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <index id="89" parent="37" name="uk_6dotkott2kjsp8vw4d0m25fb7">
-      <ObjectId>34600</ObjectId>
-      <StateNumber>3088</StateNumber>
+    <key id="87" parent="38" name="roles_pkey">
+      <ObjectId>34691</ObjectId>
+      <StateNumber>3314</StateNumber>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>roles_pkey</UnderlyingIndexName>
+    </key>
+    <column id="88" parent="39" name="user_id">
+      <Position>1</Position>
+      <DataType>uuid|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>3315</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="89" parent="39" name="role_id">
+      <Position>2</Position>
+      <DataType>bigint|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>3315</StateNumber>
+      <TypeId>20</TypeId>
+    </column>
+    <index id="90" parent="39" name="user_roles_pkey">
+      <ObjectId>34695</ObjectId>
+      <StateNumber>3315</StateNumber>
+      <ColNames>user_id
+role_id</ColNames>
+      <Unique>1</Unique>
+      <Primary>1</Primary>
+    </index>
+    <key id="91" parent="39" name="user_roles_pkey">
+      <ObjectId>34696</ObjectId>
+      <StateNumber>3315</StateNumber>
+      <ColNames>user_id
+role_id</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>user_roles_pkey</UnderlyingIndexName>
+    </key>
+    <foreign-key id="92" parent="39" name="fkhfh9dx7w3ubf1co1vdev94g3f">
+      <ObjectId>34752</ObjectId>
+      <StateNumber>3327</StateNumber>
+      <ColNames>user_id</ColNames>
+      <RefTableId>34697</RefTableId>
+      <RefColPositions>1</RefColPositions>
+      <RefTableName>users</RefTableName>
+      <RefKeyName>users_pkey</RefKeyName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+    <foreign-key id="93" parent="39" name="fkh8ciramu9cc9q3qcqiv4ue8a6">
+      <ObjectId>34747</ObjectId>
+      <StateNumber>3326</StateNumber>
+      <ColNames>role_id</ColNames>
+      <RefTableId>34686</RefTableId>
+      <RefColPositions>1</RefColPositions>
+      <RefTableName>roles</RefTableName>
+      <RefKeyName>roles_pkey</RefKeyName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+    <column id="94" parent="40" name="id">
+      <Position>1</Position>
+      <DataType>uuid|0s</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>3316</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <column id="95" parent="40" name="timestamp">
+      <Position>2</Position>
+      <DataType>timestamp|0s</DataType>
+      <StateNumber>3316</StateNumber>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="96" parent="40" name="updated_on">
+      <Position>3</Position>
+      <DataType>timestamp|0s</DataType>
+      <StateNumber>3316</StateNumber>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="97" parent="40" name="email">
+      <Position>4</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <StateNumber>3316</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="98" parent="40" name="password">
+      <Position>5</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <StateNumber>3316</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="99" parent="40" name="username">
+      <Position>6</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <StateNumber>3316</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="100" parent="40" name="avatar_id">
+      <Position>7</Position>
+      <DataType>uuid|0s</DataType>
+      <StateNumber>3316</StateNumber>
+      <TypeId>2950</TypeId>
+    </column>
+    <index id="101" parent="40" name="users_pkey">
+      <ObjectId>34703</ObjectId>
+      <StateNumber>3316</StateNumber>
+      <ColNames>id</ColNames>
+      <Unique>1</Unique>
+      <Primary>1</Primary>
+    </index>
+    <index id="102" parent="40" name="uk_6dotkott2kjsp8vw4d0m25fb7">
+      <ObjectId>34705</ObjectId>
+      <StateNumber>3317</StateNumber>
       <ColNames>email</ColNames>
       <Unique>1</Unique>
     </index>
-    <key id="90" parent="37" name="users_pkey">
-      <ObjectId>34599</ObjectId>
-      <StateNumber>3087</StateNumber>
+    <key id="103" parent="40" name="users_pkey">
+      <ObjectId>34704</ObjectId>
+      <StateNumber>3316</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>users_pkey</UnderlyingIndexName>
     </key>
-    <key id="91" parent="37" name="uk_6dotkott2kjsp8vw4d0m25fb7">
-      <ObjectId>34601</ObjectId>
-      <StateNumber>3088</StateNumber>
+    <key id="104" parent="40" name="uk_6dotkott2kjsp8vw4d0m25fb7">
+      <ObjectId>34706</ObjectId>
+      <StateNumber>3317</StateNumber>
       <ColNames>email</ColNames>
       <UnderlyingIndexName>uk_6dotkott2kjsp8vw4d0m25fb7</UnderlyingIndexName>
     </key>
-    <foreign-key id="92" parent="37" name="fk2lttmx8vn9eecykig5sch3v0h">
-      <ObjectId>34642</ObjectId>
-      <StateNumber>3097</StateNumber>
+    <foreign-key id="105" parent="40" name="fk2lttmx8vn9eecykig5sch3v0h">
+      <ObjectId>34757</ObjectId>
+      <StateNumber>3328</StateNumber>
       <ColNames>avatar_id</ColNames>
-      <RefTableId>34570</RefTableId>
+      <RefTableId>34662</RefTableId>
       <RefColPositions>1</RefColPositions>
       <RefTableName>images</RefTableName>
       <RefKeyName>images_pkey</RefKeyName>

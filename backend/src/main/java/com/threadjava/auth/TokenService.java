@@ -57,9 +57,9 @@ public class TokenService {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(AuthUser userDetails, long expTime) {
+    public String generateToken(AuthUser authUser, long expTime) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getId(), expTime);
+        return createToken(claims, authUser.getId(), expTime);
     }
 
     private String createToken(Map<String, Object> claims, UUID subject, long expTime) {
@@ -74,7 +74,6 @@ public class TokenService {
 
     static public UUID getUserId(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        var currentUserId = (String)auth.getPrincipal();
-        return  UUID.fromString(currentUserId);
+        return ((AuthUser)auth.getPrincipal()).getId();
     }
 }

@@ -1,4 +1,13 @@
-import { GET_USER_REJECTED, SET_USER, USER_LOADING, USER_LOGOUT, RESET_PASSWORD, RESET_ERROR } from './actionTypes';
+import {
+  GET_USER_REJECTED,
+  SET_USER,
+  USER_LOADING,
+  USER_LOGOUT,
+  RESET_PASSWORD,
+  RESET_ERROR,
+  SET_USERS,
+  SET_ROLE
+} from './actionTypes';
 
 export default (state = {
   status: 'idle',
@@ -46,6 +55,24 @@ export default (state = {
         status: 'idle',
         error: null
       };
+    case SET_USERS:
+      return {
+        ...state,
+        users: action.payload.users,
+        roles: action.payload.roles,
+        status: 'completed'
+      };
+    case SET_ROLE: {
+      const { userId, role } = action.payload;
+      const index = state.users.findIndex(user => user.id === userId);
+      const updatedUser = { ...state.users[index], roles: [role] };
+      const newUsers = [...state.users];
+      newUsers.splice(index, 1, updatedUser);
+      return {
+        ...state,
+        users: newUsers
+      };
+    }
     default:
       return state;
   }

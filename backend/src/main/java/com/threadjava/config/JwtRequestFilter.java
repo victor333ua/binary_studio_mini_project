@@ -1,6 +1,7 @@
 package com.threadjava.config;
 
 import com.threadjava.auth.TokenService;
+import com.threadjava.users.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,7 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.UUID;
 
 import static com.threadjava.config.SecurityConstants.HEADER_STRING;
 import static com.threadjava.config.SecurityConstants.TOKEN_PREFIX;
@@ -21,6 +22,8 @@ import static com.threadjava.config.SecurityConstants.TOKEN_PREFIX;
 public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private UsersService usersService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -51,6 +54,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String userId = tokenService.extractUserId(tokenString);
         if (userId == null) throw new Exception("userId from token == null");
 
-        return new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());
+        var authUser = usersService.loadUserById(UUID.fromString(userId));
+
+        return new UsernamePasswordAuthenticationToken(authUser, null, authUser.getAuthorities());
     }
 }

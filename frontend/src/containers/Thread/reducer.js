@@ -5,7 +5,8 @@ import {
   DELETE_POST,
   LOAD_MORE_POSTS,
   SET_ALL_POSTS,
-  UPDATE_POST
+  UPDATE_POST,
+  RESET_ERROR
 } from './actionTypes';
 
 import {
@@ -18,20 +19,24 @@ import {
 
 import { addLike } from '../../helpers/likesHelper';
 
-export default (state = { selector: 0 }, action) => {
+export default (state = {
+  status: 'idle',
+  error: null
+}, action) => {
   switch (action.type) {
     case SET_ALL_POSTS:
       return {
         ...state,
         posts: action.payload.posts,
-        selector: action.payload.selector,
+        pFilter: action.payload.postsFilter,
         hasMorePosts: Boolean(action.payload.posts.length)
       };
     case LOAD_MORE_POSTS:
       return {
         ...state,
-        posts: [...(state.posts || []), ...action.posts],
-        hasMorePosts: Boolean(action.posts.length)
+        posts: [...(state.posts || []), ...action.payload.posts],
+        pFilter: action.payload.postsFilter,
+        hasMorePosts: Boolean(action.payload.posts.length)
       };
     case ADD_POST:
       return {
@@ -130,13 +135,12 @@ export default (state = { selector: 0 }, action) => {
       }
       return { ...state, posts: updatedPosts, expandedPost: exPost };
     }
-    case ACTION_REJECTED: {
-      return {
-        ...state,
-        status: 'error',
-        error: action.error.message
-      };
-    }
+    case ACTION_REJECTED:
+      return { ...state, status: 'error', error: action.error };
+
+    case RESET_ERROR:
+      return { ...state, status: 'idle', error: null };
+
     default:
       return state;
   }

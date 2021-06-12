@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import static com.threadjava.config.SecurityConstants.ROUTES_GUEST_BLACK_LIST;
 import static com.threadjava.config.SecurityConstants.ROUTES_WHITE_LIST;
 
 
@@ -18,7 +20,7 @@ import static com.threadjava.config.SecurityConstants.ROUTES_WHITE_LIST;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
-    private UsersService myUserDetailsService;
+    private UsersService usersService;
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
@@ -28,17 +30,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .cors().and()
             .csrf().disable()
             .authorizeRequests()
-            .antMatchers(ROUTES_WHITE_LIST)
-            .permitAll()
-            .anyRequest().authenticated().and()
+                .antMatchers(ROUTES_WHITE_LIST).permitAll()
+                .antMatchers(ROUTES_GUEST_BLACK_LIST).hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+                .anyRequest().authenticated()
+                .and()
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
             .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(myUserDetailsService);
+        auth.userDetailsService(usersService);
     }
 
     @Override

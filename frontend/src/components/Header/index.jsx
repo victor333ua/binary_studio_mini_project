@@ -5,6 +5,7 @@ import { getUserImgLink } from 'src/helpers/imageHelper';
 import { Header as HeaderUI, Image, Grid, Icon, Button, Container } from 'semantic-ui-react';
 
 import styles from './styles.module.scss';
+import { ADMIN } from '../../scenes/rolesConstants';
 
 const Header = ({ user, logout }) => (
   <Container text className={styles.headerWrp}>
@@ -12,15 +13,25 @@ const Header = ({ user, logout }) => (
       <Grid.Column>
         {user && (
           <NavLink exact to="/">
-            <HeaderUI>
+            <HeaderUI as="h3">
               <Image circular src={getUserImgLink(user.image?.link)} />
-              {' '}
-              {user.username}
+              <HeaderUI.Content>
+                { user.username }
+                <HeaderUI.Subheader style={{ fontSize: '10px', fontStyle: 'italic' }}>
+                  { user.roles[0]?.name }
+                </HeaderUI.Subheader>
+              </HeaderUI.Content>
             </HeaderUI>
           </NavLink>
         )}
       </Grid.Column>
       <Grid.Column textAlign="right">
+        {user.roles[0].name === ADMIN
+          && (
+            <NavLink exact activeClassName="active" to="/admin" className={styles.menuBtn}>
+              <Icon name="settings" size="large" />
+            </NavLink>
+          )}
         <NavLink exact activeClassName="active" to="/profile" className={styles.menuBtn}>
           <Icon name="user circle" size="large" />
         </NavLink>

@@ -8,12 +8,14 @@
   &:global(.ui.icon.button) {
     border: none;
     box-shadow: none;
+    padding: 5px;
   }
 }
 
 .menuBtn,
 .menuBtn:global(.ui.icon.button) {
   color: gray;
+  margin-right: 10px;
   &:hover {
     color: black !important;
   }

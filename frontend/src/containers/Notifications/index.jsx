@@ -93,7 +93,7 @@ const Notifications = (
   useEffect(() => {
     // const [stompClient] = useState(Stomp.over(new SockJS('/ws')));
     const stompClient = new Client({
-      brokerURL: 'ws://192.168.1.103:8080/ws',
+      brokerURL: `ws:${window.location.host}/ws`,
       debug() {
         // NotificationManager.info(str);
       },

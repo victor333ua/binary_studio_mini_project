@@ -4,6 +4,8 @@ import com.threadjava.users.dto.UserDetailsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.threadjava.auth.TokenService.getUserId;
 
 @RestController
@@ -21,4 +23,7 @@ public class UserController {
     public void saveUser(@RequestBody UserDetailsDto userDto) {
         userService.editUser(userDto);
     }
+
+    @GetMapping("/all")
+    public List<UserDetailsDto> getAllUsers() { return userService.getAllUsers(); }
 }

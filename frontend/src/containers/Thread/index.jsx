@@ -1,18 +1,20 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ExpandedPost from 'src/containers/ExpandedPost';
 import Post from 'src/components/Post';
 import AddPost from 'src/components/AddPost';
-import { Container, Grid, Loader, Segment } from 'semantic-ui-react';
+import { Button, Comment as CommentUI, Container, Grid, Loader, Message, Modal, Segment } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
-import { addPost, deletePost, likePost, loadMorePosts, loadPosts, updatePost } from './actions';
+import { addPost, deletePost, likePost, loadMorePosts, loadPosts, resetError, updatePost } from './actions';
 import { toggleExpandedPost } from '../ExpandedPost/actions';
 
 import styles from './styles.module.scss';
 import CustomCheckbox from '../../components/CustomCheckbox';
+import { GUEST } from '../../scenes/rolesConstants';
+import { ModalNotAllowed } from '../../components/ModalNotAllowed';
 
 const postsFilter = {
   selector: 0,
@@ -25,32 +27,42 @@ const Thread = ({
   user,
   loadPosts: load,
   loadMorePosts: loadMore,
-  posts = [],
+  posts,
   expandedPost,
   hasMorePosts,
-  selector,
+  pFilter: { selector, from: prevFrom },
   addPost: createPost,
   likePost: like,
   toggleExpandedPost: onExpPost,
   deletePost: cut,
-  updatePost: update
+  updatePost: update,
+  error,
+  resetError: resetErr
 }) => {
   // after redirect we read state from redux and set switches accordingly
   const [shifter, setShifter] = useState([...Array(3)].map(
     (item, index) => selector !== 0 && index === (selector - 1)
   ));
+  const ref = useRef('1st');
 
   // simultaneously only one switch can be on
   const toggle = i => () => {
     setShifter(shifter.map((item, index) => (i === index ? !item : false)));
   };
   useLayoutEffect(() => {
+    // after redirect we already have fetched posts in redux state
+    if (ref.current === '1st' && posts.length) {
+      postsFilter.from = prevFrom;
+      ref.current = '2rd';
+      return;
+    }
+    ref.current = '2rd';
     postsFilter.from = 0;
     postsFilter.selector = shifter.findIndex(item => item) + 1;
     const getPosts = async () => { await load(postsFilter); };
     getPosts();
     postsFilter.from = postsFilter.count;
-  }, [shifter, load]);
+  }, [shifter]);
 
   const getMorePosts = () => {
     loadMore(postsFilter);
@@ -64,10 +76,16 @@ const Thread = ({
     </Grid.Column>
   ));
 
+  const isError = Boolean(error);
+
   return (
     <Container text className={styles.threadContent}>
+      {isError && error.status === 403 && <ModalNotAllowed resetError={resetErr} />}
+      {isError && error.status !== 403 && <Message error header="Server error!" content={error.message} />}
       <div className={styles.addPostForm}>
-        <AddPost addPost={createPost} />
+        {user.roles?.[0].name !== GUEST
+          ? <AddPost addPost={createPost} />
+          : <Message header={GUEST} content="You are not allowed to add post"/>}
       </div>
       <Segment className={styles.toolbar}>
         <Grid textAlign="center" columns={3} >
@@ -101,7 +119,7 @@ Thread.propTypes = {
   posts: PropTypes.arrayOf(PropTypes.object),
   hasMorePosts: PropTypes.bool,
   expandedPost: PropTypes.objectOf(PropTypes.any),
-  selector: PropTypes.number.isRequired,
+  pFilter: PropTypes.objectOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
   loadPosts: PropTypes.func.isRequired,
   loadMorePosts: PropTypes.func.isRequired,
@@ -109,21 +127,26 @@ Thread.propTypes = {
   toggleExpandedPost: PropTypes.func.isRequired,
   addPost: PropTypes.func.isRequired,
   updatePost: PropTypes.func.isRequired,
-  deletePost: PropTypes.func.isRequired
+  deletePost: PropTypes.func.isRequired,
+  error: PropTypes.objectOf(PropTypes.any),
+  resetError: PropTypes.func.isRequired
 };
 
 Thread.defaultProps = {
   posts: [],
   hasMorePosts: true,
   expandedPost: undefined,
-  user: {}
+  user: {},
+  pFilter: { selector: 0, from: 0 },
+  error: null
 };
 
 const mapStateToProps = rootState => ({
   posts: rootState.posts.posts,
   hasMorePosts: rootState.posts.hasMorePosts,
   expandedPost: rootState.posts.expandedPost,
-  selector: rootState.posts.selector,
+  pFilter: rootState.posts.pFilter,
+  error: rootState.posts.error,
   user: rootState.profile.user
 });
 
@@ -134,7 +157,8 @@ const actions = {
   toggleExpandedPost,
   addPost,
   updatePost,
-  deletePost
+  deletePost,
+  resetError
 };
 
 const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);

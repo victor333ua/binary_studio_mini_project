@@ -5,6 +5,8 @@ import com.threadjava.auth.dto.UserRegisterDto;
 import com.threadjava.auth.model.AuthUser;
 import com.threadjava.auth.dto.AuthUserDTO;
 import com.threadjava.auth.dto.UserLoginDTO;
+import com.threadjava.role.RoleRepository;
+import com.threadjava.users.dto.UserDetailsDto;
 import com.threadjava.users.model.User;
 import com.threadjava.users.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +32,23 @@ public class AuthService {
     private TokenService tokenService;
     @Autowired
     private UsersService usersService;
+    @Autowired
+    private RoleRepository roleRepository;
     @Value("${devServer}")
     private String DEV_SERVER;
 
 
     public AuthUserDTO register(UserRegisterDto userDto) throws Exception {
         User user = AuthUserMapper.MAPPER.userRegisterDtoToUser(userDto);
-        var loginDTO = new UserLoginDTO(user.getEmail(), user.getPassword());
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+
+        // default user
+        var roleOfUser = roleRepository.findByName("USER").get();
+        user.getRoles().add(roleOfUser);
+
         usersService.save(user);
+
+        var loginDTO = new UserLoginDTO(user.getEmail(), user.getPassword());
         return login(loginDTO);
     }
 
@@ -51,10 +61,12 @@ public class AuthService {
         catch (BadCredentialsException e) {
             throw new Exception("Incorrect username or password", e);
         }
+    // here we need only userId with such email (if password is legal)
+        var authUser = (AuthUser)auth.getPrincipal();// from UserDetailsService:loadUserByUserName
+        final String jwt = tokenService.generateToken(authUser, EXPIRATION_TIME);
 
-        var currentUser = (AuthUser)auth.getPrincipal();
-        final var userDetails = usersService.getUserById(currentUser.getId());
-        final String jwt = tokenService.generateToken(currentUser, EXPIRATION_TIME);
+        final UserDetailsDto userDetails = usersService.getUserById(authUser.getId());
+
         return new AuthUserDTO(jwt, userDetails);
     }
 

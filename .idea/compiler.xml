@@ -16,6 +16,7 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mapstruct/mapstruct-processor/1.3.1.Final/a5e2a807eee3372cbfba0685b70505d7c0b7ae9a/mapstruct-processor-1.3.1.Final.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/2.2.5.RELEASE/3426cb36706915047406da672b7ee9628f5f47d6/spring-boot-configuration-processor-2.2.5.RELEASE.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.12/48e4e5d60309ebd833bc528dcf77668eab3cd72c/lombok-1.18.12.jar" />
         </processorPath>
         <module name="thread-java.main" />

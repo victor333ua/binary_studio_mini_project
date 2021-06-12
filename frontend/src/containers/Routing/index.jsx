@@ -15,6 +15,8 @@ import Notifications from 'src/containers/Notifications';
 import { logout } from 'src/containers/Profile/actions';
 import PropTypes from 'prop-types';
 import ChangePassword from 'src/components/ChangePassword';
+import AdminPage from '../AdminPage';
+import AdminRoute from '../AdminRoute';
 
 const Routing = ({
   user,
@@ -35,6 +37,7 @@ const Routing = ({
         <PrivateRoute exact path="/profile" component={Profile}/>
         <PrivateRoute path="/share/:postHash" component={SharedPost}/>
         <PublicRoute path="/reset/:token" component={ChangePassword}/>
+        <AdminRoute exact path="/admin" component={AdminPage} />
         <Route path="*" exact component={NotFound}/>
       </Switch>
     </main>

@@ -33,7 +33,7 @@ const LoginForm = ({
 
   const setNewData = setNewState => data => {
     setNewState(data);
-    resetErr(); // set error to null in state to hide error message
+    resetErr(); // set error to null in redux state to hide error message
   };
 
   const handleLoginClick = () => {

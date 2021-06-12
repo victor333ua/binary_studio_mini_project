@@ -2,15 +2,21 @@ package com.threadjava.users.model;
 
 import com.threadjava.db.BaseEntity;
 import com.threadjava.image.model.Image;
-import lombok.*;
+import com.threadjava.role.model.Role;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
 @EqualsAndHashCode(callSuper=true)
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "users")
 public class User extends BaseEntity {
     @Column(name = "email", unique=true)
@@ -26,4 +32,10 @@ public class User extends BaseEntity {
     @JoinColumn(name = "avatar_id")
     private Image avatar;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 }

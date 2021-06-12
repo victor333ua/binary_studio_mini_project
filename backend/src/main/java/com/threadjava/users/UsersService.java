@@ -9,7 +9,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UsersService implements UserDetailsService {
@@ -22,27 +25,42 @@ public class UsersService implements UserDetailsService {
     public AuthUser loadUserByUsername(String email) throws UsernameNotFoundException {
         return usersRepository
                 .findByEmail(email)
-                .map(user -> new AuthUser(user.getId(), user.getEmail(), user.getPassword()))
+                .map(AuthUser::new)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
+    }
+
+    public AuthUser loadUserById(UUID id) {
+        return usersRepository
+                .findById(id)
+                .map(AuthUser::new)
+                .orElseThrow(() -> new UsernameNotFoundException(id.toString()));
     }
 
     public UserDetailsDto getUserById(UUID id) {
         return usersRepository
                 .findById(id)
                 .map(UserMapper.MAPPER::userToUserDetailsDto)
-                .orElseThrow(() -> new UsernameNotFoundException("No user found with username"));
+                .orElseThrow(() -> new UsernameNotFoundException(id.toString()));
+    }
+
+    public List<UserDetailsDto> getAllUsers() {
+        return usersRepository
+                .findAll()
+                .stream()
+                .map(UserMapper.MAPPER::userToUserDetailsDto)
+                .collect(Collectors.toList());
     }
 
     public void editUser(UserDetailsDto userDto) {
-// image mapped automatically through image mapper (if exists)
+        // image mapped automatically through image mapper (if exists)
         var user = UserMapper.MAPPER.userDtoToUser(userDto);
 
-// it's impossible save separate fields through save(entity), (necessary to run sql), thus we get old values
+        // it's impossible save separate fields through save(entity), (necessary to run sql), thus we get old values
         var oldUser = usersRepository.findById(user.getId())
                 .orElseThrow();
 
         var password = user.getPassword();
-        if(password != null) user.setPassword(bCryptPasswordEncoder.encode(password));
+        if (password != null) user.setPassword(bCryptPasswordEncoder.encode(password));
         else user.setPassword(oldUser.getPassword());
 
         user.setCreatedAt(oldUser.getCreatedAt());

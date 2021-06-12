@@ -40,14 +40,12 @@ function getFetchArgs(args) {
 
 export async function throwIfResponseFailed(res) {
   if (!res.ok) {
-    let parsedException = 'Something went wrong with request!';
+    let parsedException = new Error('Something went wrong with request!');
     try {
       parsedException = await res.json();
     } catch (err) {
       //
     }
-    // eslint-disable-next-line no-console
-    console.log(parsedException);
     throw parsedException;
   }
 }
@@ -58,6 +56,5 @@ export default async function callWebApi(args) {
     getFetchArgs(args)
   );
   await throwIfResponseFailed(res);
-  // res = await res.json();
   return res;
 }

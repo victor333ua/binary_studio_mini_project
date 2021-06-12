@@ -11,7 +11,8 @@ import com.threadjava.post.PostsRepository;
 import com.threadjava.post.model.Post;
 import com.threadjava.postReactions.PostReactionsRepository;
 import com.threadjava.postReactions.model.PostReaction;
-import com.threadjava.postReactions.model.PostReactionId;
+import com.threadjava.role.model.Role;
+import com.threadjava.role.RoleRepository;
 import com.threadjava.users.UsersRepository;
 import com.threadjava.users.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,8 @@ public class DatabaseSeeder {
     private PasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private CommentReactionsRepository commentReactionsRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
     @EventListener
     public void seed(ContextRefreshedEvent event) {
@@ -56,7 +59,32 @@ public class DatabaseSeeder {
             seedCommentsTable();
             seedPostReactionsTable();
             seedCommentReactionsTable();
+            seedRolesTable();
+            seedUsersRolesTable();
         }
+    }
+
+    private void seedRolesTable() {
+        var roles = Stream.of("USER", "ADMIN", "GUEST")
+        .map(name -> {
+            var role = new Role();
+            role.setName(name);
+            return role;
+        }).collect(Collectors.toList());
+        roleRepository.saveAll(roles);
+    }
+
+    private void seedUsersRolesTable() {
+        var roleOfUser = roleRepository.findByName("USER").get();
+        var roleOfAdmin = roleRepository.findByName("ADMIN").get();
+        var adminId = usersRepository.findByEmail("demo@demo.com").get().getId();
+        var users = usersRepository.findAll();
+        users.forEach(user -> {
+                    var roles = user.getRoles();
+                    if(user.getId().equals(adminId)) roles.add(roleOfAdmin);
+                    else roles.add(roleOfUser);
+                });
+        usersRepository.saveAll(users);
     }
 
     private void seedImagesTable() {

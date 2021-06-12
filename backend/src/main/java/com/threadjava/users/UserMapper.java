@@ -1,9 +1,6 @@
 package com.threadjava.users;
 
-import com.threadjava.post.PostMapper;
-import com.threadjava.post.model.Post;
 import com.threadjava.users.dto.UserDetailsDto;
-import com.threadjava.users.dto.UserShortDto;
 import com.threadjava.users.model.User;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -20,6 +17,7 @@ public abstract class UserMapper {
     @Mapping(source = "image", target = "avatar")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
     public abstract  User userDtoToUser(UserDetailsDto userDto);
 
     @AfterMapping

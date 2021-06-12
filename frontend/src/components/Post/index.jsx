@@ -27,10 +27,12 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePos
 
   const [text, setText] = useState(body);
   const [editImage, setEditImage] = useState(image);
+
+  // if we received new body & image through ws
   useEffect(() => {
     if (body !== text) setText(body);
     if (editImage !== image) setEditImage(image);
-  }, [body, editImage, image, text]);
+  }, [body, image]);
 
   const [isEdit, setEdit] = useState(false);
   const [openDeleteDialog, setDeleteDialog] = useState(false);
@@ -104,8 +106,18 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePos
                     header="Upload Image to Imgur - Server error"
                     content={errorUploadingImage}
                   />
-                  <Button content="Cancel" floated="right" onClick={() => setEdit(false)} secondary/>
-                  <Button content="Save" floated="right" onClick={() => onUpdatePost()} primary/>
+                  <Button
+                    content="Cancel"
+                    floated="right"
+                    onClick={() => { setEdit(false); setErrorUploading(false); }}
+                    secondary
+                  />
+                  <Button
+                    primary
+                    content="Save"
+                    floated="right"
+                    onClick={() => { onUpdatePost(); setErrorUploading(false); }}
+                  />
                   <Button as="label" icon labelPosition="left" floated="left" loading={isUploading}>
                     <Icon name="image" />
                     Attach/change image
