@@ -41,6 +41,7 @@ module.exports=
     "linebreak-style": 0, //["error", "windows"]
     "react/jsx-tag-spacing": "off",
     "no-trailing-spaces": "off",
-    "jsx-a11y/label-has-associated-control": "off"
+    "jsx-a11y/label-has-associated-control": "off",
+    "no-param-reassign":"off"
   }
 }

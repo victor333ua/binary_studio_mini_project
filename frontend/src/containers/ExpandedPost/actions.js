@@ -49,7 +49,7 @@ export const likeComment = ({ commentId, postId, isLike, currentUser }) => async
   try {
     let isNewRecord = await commentService.likeComment({ commentId, postId, isLike, currentUser });
     if (isNewRecord === undefined) isNewRecord = null;
-    dispatch(likeCommentAction({ isNewRecord, commentId, isLike, currentUser }));
+    dispatch(likeCommentAction({ postId, isNewRecord, commentId, isLike, currentUser }));
   } catch (err) {
     dispatch(postsRejected(err));
   }

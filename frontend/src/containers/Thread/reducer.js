@@ -43,11 +43,6 @@ export default (state = {
         ...state,
         posts: [action.post, ...state.posts]
       };
-    case SET_EXPANDED_POST:
-      return {
-        ...state,
-        expandedPost: action.post
-      };
     case DELETE_POST: {
       const index = state.posts.findIndex(post => post.id === action.id);
       const updatePosts = [...state.posts];
@@ -83,6 +78,12 @@ export default (state = {
       }
       return { ...state, posts: updatedPosts, expandedPost: exPost };
     }
+
+    case SET_EXPANDED_POST:
+      return {
+        ...state,
+        expandedPost: action.post
+      };
     case ADD_COMMENT: {
       const { postId } = action.comment;
       const updatedPosts = state.posts.map(post => (post.id !== postId

@@ -4,14 +4,13 @@ import { Button, Comment as CommentUI, Form, Icon, Popup } from 'semantic-ui-rea
 import moment from 'moment';
 import { getUserImgLink } from 'src/helpers/imageHelper';
 import TextareaAutosize from 'react-textarea-autosize';
+import { useDispatch } from 'react-redux';
 import styles from './styles.module.scss';
 import { DeleteDialog } from '../DeleteDialog';
+import { deleteComment, likeComment, updateComment } from '../../containers/ExpandedPost/asyncThunks';
 
 const Comment = (
   { comment: { id, body, createdAt, user, likeCount, dislikeCount, reactions },
-    likeComment,
-    updateComment,
-    deleteComment,
     user: currentUser,
     postId
   }
@@ -32,18 +31,20 @@ const Comment = (
 
   const onCloseDeleteDialog = () => setDeleteDialog(false);
 
-  const onDelete = async () => {
-    await deleteComment({ id, postId });
+  const dispatch = useDispatch();
+
+  const onDelete = () => {
+    dispatch(deleteComment({ id, postId }));
     setDeleteDialog(false);
   };
 
-  const onUpdateComment = async () => {
-    await updateComment({ id, body: text, postId });
+  const onUpdateComment = () => {
+    dispatch(updateComment({ id, body: text, postId }));
     setEditMode(false);
   };
 
-  const onLikeComment = async isLike => {
-    await likeComment({ commentId: id, isLike, postId, currentUser });
+  const onLikeComment = isLike => {
+    dispatch(likeComment({ commentId: id, isLike, postId, currentUser }));
   };
 
   return (
@@ -112,7 +113,7 @@ const Comment = (
             </div>
           </CommentUI.Actions>
           {isEditMode && (
-            <Form edit comment>
+            <Form edit="true" comment>
               <Form.Field
                 control={TextareaAutosize}
                 onChange={e => setText(e.target.value)}
@@ -130,9 +131,6 @@ const Comment = (
 Comment.propTypes = {
   user: PropTypes.objectOf(PropTypes.any).isRequired,
   comment: PropTypes.objectOf(PropTypes.any).isRequired,
-  likeComment: PropTypes.func.isRequired,
-  deleteComment: PropTypes.func.isRequired,
-  updateComment: PropTypes.func.isRequired,
   postId: PropTypes.string.isRequired
 };
 

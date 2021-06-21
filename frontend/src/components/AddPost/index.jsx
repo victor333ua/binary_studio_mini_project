@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Button, Icon, Image, Segment, Message } from 'semantic-ui-react';
 
+import { useSelector } from 'react-redux';
 import styles from './styles.module.scss';
 import * as imageService from '../../services/imageService';
 
@@ -12,26 +13,18 @@ const AddPost = ({
   const [image, setImage] = useState(undefined);
   const [isUploading, setIsUploading] = useState(false);
   const [errorUploadingImage, setErrorUploading] = useState(null);
-  const [errorAddingPost, setErrorAddingPost] = useState(null);
-  const [isAddPostLoading, setIsAddPostLoading] = useState(false);
+
+  const errorAddingPost = useSelector(state => state.posts.error?.message);
+  const status = useSelector(state => state.posts.status);
+  const isAddPostLoading = status === 'loading';
 
   const handleAddPost = async () => {
-    if (!body) {
-      return;
-    }
-    setIsAddPostLoading(true);
-    try {
-      await addPost({
-        imageId: image?.imageId,
-        body
-      });
-    } catch (err) {
-      setErrorAddingPost(err.message);
-    } finally {
-      setBody('');
-      setImage(undefined);
-      setIsAddPostLoading(false);
-    }
+    if (!body) { return; }
+
+    await addPost({ imageId: image?.imageId, body });
+
+    setBody('');
+    setImage(undefined);
   };
 
   const handleUploadFile = async ({ target }) => {

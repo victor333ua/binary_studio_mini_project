@@ -1,10 +1,10 @@
 import React, { useLayoutEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { register } from 'src/containers/Profile/actions';
 import { Form, Button, Segment, Message } from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import validator from 'validator';
+import { register } from '../Profile/asyncThunks';
 import PasswordInput from '../../components/PasswordInput';
 
 const RegistrationForm = ({ register: signIn, status, error }) => {

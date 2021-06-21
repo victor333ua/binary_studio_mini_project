@@ -12,16 +12,16 @@ import NotFound from 'src/scenes/NotFound';
 import PrivateRoute from 'src/containers/PrivateRoute';
 import PublicRoute from 'src/containers/PublicRoute';
 import Notifications from 'src/containers/Notifications';
-import { logout } from 'src/containers/Profile/actions';
 import PropTypes from 'prop-types';
 import ChangePassword from 'src/components/ChangePassword';
+import { userLogout } from '../Profile/slice';
 import AdminPage from '../AdminPage';
 import AdminRoute from '../AdminRoute';
 
 const Routing = ({
   user,
   isAuthorized,
-  logout: signOut
+  userLogout: signOut
 }) => (
   <div className="fill">
     {isAuthorized && (
@@ -47,7 +47,7 @@ const Routing = ({
 
 Routing.propTypes = {
   isAuthorized: PropTypes.bool,
-  logout: PropTypes.func.isRequired,
+  userLogout: PropTypes.func.isRequired,
   user: PropTypes.objectOf(PropTypes.any)
 };
 
@@ -56,7 +56,7 @@ Routing.defaultProps = {
   user: {}
 };
 
-const actions = { logout };
+const actions = { userLogout };
 
 const mapStateToProps = ({ profile }) => ({
   isAuthorized: profile.isAuthorized,

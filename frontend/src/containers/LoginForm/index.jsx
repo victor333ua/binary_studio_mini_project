@@ -5,14 +5,15 @@ import { Form, Button, Segment, Message, Modal } from 'semantic-ui-react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import { login, resetError } from '../Profile/actions';
+import { profileResetError } from '../Profile/slice';
+import { login } from '../Profile/asyncThunks';
 import { resetPassword } from '../../services/authService';
 import styles from './styles.module.scss';
 import PasswordInput from '../../components/PasswordInput';
 
 const LoginForm = ({
   login: logIn,
-  resetError: resetErr,
+  profileResetError: resetErr,
   status,
   error,
   location
@@ -110,7 +111,7 @@ const LoginForm = ({
 
 LoginForm.propTypes = {
   login: PropTypes.func.isRequired,
-  resetError: PropTypes.func.isRequired,
+  profileResetError: PropTypes.func.isRequired,
   status: PropTypes.string.isRequired,
   error: PropTypes.string,
   location: PropTypes.objectOf(PropTypes.any).isRequired
@@ -119,7 +120,7 @@ LoginForm.defaultProps = {
   error: null
 };
 
-const actions = { login, resetError };
+const actions = { login, profileResetError };
 
 const mapStateToProps = ({ profile }) => ({
   status: profile.status,

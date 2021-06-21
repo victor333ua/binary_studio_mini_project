@@ -5,9 +5,16 @@ import 'react-notifications/lib/notifications.css';
 import { Client } from '@stomp/stompjs';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { applyPost, deletePostAction, likePostAction, updatePostAction } from '../Thread/actions';
-// eslint-disable-next-line max-len
-import { addCommentAction, deleteCommentAction, likeCommentAction, updateCommentAction } from '../ExpandedPost/actions';
+import { applyPost } from '../Thread/asyncThunks';
+import {
+  deletePostAction,
+  likePostAction,
+  updatePostAction,
+  addCommentAction,
+  deleteCommentAction,
+  likeCommentAction,
+  updateCommentAction
+} from '../Thread/slice';
 
 const Notifications = (
   { user,

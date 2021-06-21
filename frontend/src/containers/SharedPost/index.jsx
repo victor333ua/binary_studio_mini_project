@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
-import { toggleExpandedPost } from 'src/containers/ExpandedPost/actions';
+import { toggleExpandedPost } from '../ExpandedPost/asyncThunks';
 
 const SharedPost = ({ match, toggleExpandedPost: toggle }) => {
   useEffect(() => {

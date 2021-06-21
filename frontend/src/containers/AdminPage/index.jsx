@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Container, Item, Message } from 'semantic-ui-react';
-import { loadUsers, saveRole } from '../Profile/actions';
+import { loadUsers, saveRole } from '../Profile/asyncThunks';
 import Spinner from '../../components/Spinner';
 import styles from '../Thread/styles.module.scss';
 import adminStyle from './styles.module.scss';

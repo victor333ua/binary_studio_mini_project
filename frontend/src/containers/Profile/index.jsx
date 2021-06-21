@@ -12,7 +12,7 @@ import { bindActionCreators } from 'redux';
 import validator from 'validator';
 import styles from './styles.module.scss';
 import * as imageService from '../../services/imageService';
-import { saveUser } from './actions';
+import { saveUser } from './asyncThunks';
 import PasswordInput from '../../components/PasswordInput';
 
 const Profile = ({ user, status, saveUser: save }) => {
