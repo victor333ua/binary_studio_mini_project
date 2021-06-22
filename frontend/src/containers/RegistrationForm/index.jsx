@@ -1,22 +1,24 @@
 import React, { useLayoutEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { Form, Button, Segment, Message } from 'semantic-ui-react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import validator from 'validator';
 import { register } from '../Profile/asyncThunks';
 import PasswordInput from '../../components/PasswordInput';
 
-const RegistrationForm = ({ register: signIn, status, error }) => {
+const RegistrationForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [registerError, setRegisterError] = useState(false);
   const [isEmailValid, setIsEmailValid] = useState(true);
 
-  const onRegister = async () => {
+  const dispatch = useDispatch();
+  const status = useSelector(state => state.profile.status);
+  const error = useSelector(state => state.profile.error.message);
+
+  const onRegister = () => {
     if (!isEmailValid) return;
-    await signIn({ email, password, username });
+    dispatch(register({ email, password, username }));
   };
 
   useLayoutEffect(() => {
@@ -62,23 +64,5 @@ const RegistrationForm = ({ register: signIn, status, error }) => {
     </Form>
   );
 };
-
-RegistrationForm.propTypes = {
-  register: PropTypes.func.isRequired,
-  status: PropTypes.string.isRequired,
-  error: PropTypes.string
-};
-RegistrationForm.defaultProps = {
-  error: null
-};
-const actions = { register };
-const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);
-const mapStateToProps = ({ profile }) => ({
-  status: profile.status,
-  error: profile.error
-});
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(RegistrationForm);
+export default RegistrationForm;
 

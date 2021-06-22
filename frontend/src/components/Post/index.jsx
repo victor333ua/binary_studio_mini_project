@@ -4,12 +4,15 @@ import { Card, Image, Label, Icon, Form, Message, Button, Popup } from 'semantic
 import TextareaAutosize from 'react-textarea-autosize';
 import moment from 'moment';
 
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles.module.scss';
 import { DeleteDialog } from '../DeleteDialog';
 import * as imageService from '../../services/imageService';
 import SharedPostLink from '../SharedPostLink';
+import { deletePost, likePost, updatePost } from '../../containers/Thread/asyncThunks';
+import { toggleExpandedPost } from '../../containers/ExpandedPost/asyncThunks';
 
-const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePost, updatePost }) => {
+const Post = ({ post }) => {
   const {
     id,
     image,
@@ -22,7 +25,9 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePos
     reactions
   } = post;
 
-  const date = moment(createdAt).fromNow();
+  const dispatch = useDispatch();
+
+  const currentUser = useSelector(state => state.profile.user);
   const isMinePost = currentUser.id === user.id;
 
   const [text, setText] = useState(body);
@@ -40,13 +45,15 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePos
   const [errorUploadingImage, setErrorUploading] = useState(null);
   const [isSharePostLink, setSharePostLink] = useState(false);
 
+  const date = moment(createdAt).fromNow();
+
   const rArray = [...reactions];
   const likesReactions = rArray.length ? rArray.filter(r => r.isLike).map(r => r.user.username).join(', ') : ' ';
   const dislikesReactions = rArray.length ? rArray.filter(r => !r.isLike).map(r => r.user.username).join(', ') : ' ';
 
-  const onDeletePost = async () => {
+  const onDeletePost = () => {
     setDeleteDialog(false);
-    await deletePost({ id, currentUser });
+    dispatch(deletePost({ id, currentUser }));
   };
   const onCloseDeleteDialog = () => setDeleteDialog(false);
 
@@ -62,14 +69,14 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePos
     }
   };
 
-  const onUpdatePost = async () => {
+  const onUpdatePost = () => {
     const postImage = image?.id === editImage?.id ? image : editImage;
-    await updatePost({ id: post.id, body: text, image: postImage, currentUser });
+    dispatch(updatePost({ id: post.id, body: text, image: postImage, currentUser }));
     setEdit(false);
   };
 
-  const onLike = async isLike => {
-    await likePost({ postId: id, postOwner: user, createdAt, isLike, currentUser });
+  const onLike = isLike => {
+    dispatch(likePost({ postId: id, postOwner: user, createdAt, isLike, currentUser }));
   };
 
   return (
@@ -170,7 +177,8 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePos
                   {dislikesReactions}
                 </Popup.Content>
               </Popup>
-              <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => toggleExpandedPost(id)}>
+              {/* eslint-disable-next-line max-len */}
+              <Label basic size="small" as="a" className={styles.toolbarBtn} onClick={() => dispatch(toggleExpandedPost(id))}>
                 <Icon name="comment" />
                 {commentCount}
               </Label>
@@ -204,12 +212,6 @@ const Post = ({ user: currentUser, post, likePost, toggleExpandedPost, deletePos
 };
 
 Post.propTypes = {
-  user: PropTypes.objectOf(PropTypes.any).isRequired,
-  post: PropTypes.objectOf(PropTypes.any).isRequired,
-  likePost: PropTypes.func.isRequired,
-  toggleExpandedPost: PropTypes.func.isRequired,
-  deletePost: PropTypes.func.isRequired,
-  updatePost: PropTypes.func.isRequired
+  post: PropTypes.objectOf(PropTypes.any).isRequired
 };
-
 export default Post;

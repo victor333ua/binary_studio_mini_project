@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { Form, Button, Icon, Image, Segment, Message } from 'semantic-ui-react';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles.module.scss';
 import * as imageService from '../../services/imageService';
+import { addPost } from '../../containers/Thread/asyncThunks';
 
-const AddPost = ({
-  addPost
-}) => {
+const AddPost = () => {
   const [body, setBody] = useState('');
   const [image, setImage] = useState(undefined);
   const [isUploading, setIsUploading] = useState(false);
@@ -17,12 +15,11 @@ const AddPost = ({
   const errorAddingPost = useSelector(state => state.posts.error?.message);
   const status = useSelector(state => state.posts.status);
   const isAddPostLoading = status === 'loading';
+  const dispatch = useDispatch();
 
-  const handleAddPost = async () => {
+  const handleAddPost = () => {
     if (!body) { return; }
-
-    await addPost({ imageId: image?.imageId, body });
-
+    dispatch(addPost({ imageId: image?.imageId, body }));
     setBody('');
     setImage(undefined);
   };
@@ -70,9 +67,4 @@ const AddPost = ({
     </Segment>
   );
 };
-
-AddPost.propTypes = {
-  addPost: PropTypes.func.isRequired
-};
-
 export default AddPost;

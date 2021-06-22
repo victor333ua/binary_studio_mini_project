@@ -1,56 +1,48 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import validator from 'validator';
 import { Form, Button, Segment, Message, Modal } from 'semantic-ui-react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { profileResetError } from '../Profile/slice';
 import { login } from '../Profile/asyncThunks';
 import { resetPassword } from '../../services/authService';
 import styles from './styles.module.scss';
 import PasswordInput from '../../components/PasswordInput';
 
-const LoginForm = ({
-  login: logIn,
-  profileResetError: resetErr,
-  status,
-  error,
-  location
-}) => {
+const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [mailError, setMailError] = useState(null);
   const [isEmailValid, setIsEmailValid] = useState(true);
 
-  if (status === 'completed') { // или можно воспольз. isAuthorized
-    const oldLocation = location.state?.from || { pathname: '/' };
-    return <Redirect to={oldLocation} />;
-    // в данном случае это не обязательно, т.к. PublicRoute
-  }
+  const status = useSelector(state => state.profile.status);
+  const error = useSelector(state => state.profile.error);
+
+  const dispatch = useDispatch();
 
   const combinedError = error || mailError;
+  let headerError = 'Server Error';
+  if (error) headerError = 'Invalid password/login';
 
   const setNewData = setNewState => data => {
     setNewState(data);
-    resetErr(); // set error to null in redux state to hide error message
+    dispatch(profileResetError()); // set error to null in redux state to hide error message
   };
 
   const handleLoginClick = () => {
     if (!isEmailValid) return;
-    logIn({ email, password });
-    // error captured in action & changed the state
+    dispatch(login({ email, password }));
+    // error captured in action & change the state
   };
 
   const reset = async () => {
     setMailError(null);
     try {
       await resetPassword(email);
+      setIsEmailSent(true);
     } catch (err) {
       setMailError(err);
     }
-    setIsEmailSent(true);
   };
 
   return (
@@ -76,8 +68,8 @@ const LoginForm = ({
         <Segment>
           <Message
             error
-            header="Server error"
-            content={combinedError}
+            header={headerError}
+            content={combinedError?.message}
           />
           <Form.Input
             fluid
@@ -109,28 +101,5 @@ const LoginForm = ({
   );
 };
 
-LoginForm.propTypes = {
-  login: PropTypes.func.isRequired,
-  profileResetError: PropTypes.func.isRequired,
-  status: PropTypes.string.isRequired,
-  error: PropTypes.string,
-  location: PropTypes.objectOf(PropTypes.any).isRequired
-};
-LoginForm.defaultProps = {
-  error: null
-};
-
-const actions = { login, profileResetError };
-
-const mapStateToProps = ({ profile }) => ({
-  status: profile.status,
-  error: profile.error
-});
-
-const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(LoginForm);
+export default LoginForm;
 

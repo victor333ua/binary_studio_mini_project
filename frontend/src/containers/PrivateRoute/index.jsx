@@ -1,30 +1,25 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-const PrivateRoute = ({ component: Component, isAuthorized, ...rest }) => (
-  <Route
-    {...rest}
-    render={props => (isAuthorized
-      ? <Component {...props} />
-      : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />)}
-  />
-);
+const PrivateRoute = ({ component: Component, ...rest }) => {
+  const isAuthorized = useSelector(state => state.profile.isAuthorized);
+  return (
+    <Route
+      {...rest}
+      render={props => (isAuthorized
+        ? <Component {...props} />
+        : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />)}
+    />
+  );
+};
 
 PrivateRoute.propTypes = {
-  isAuthorized: PropTypes.bool,
-  component: PropTypes.any.isRequired, // eslint-disable-line
-  location: PropTypes.any // eslint-disable-line
+  component: PropTypes.objectOf(PropTypes.any).isRequired,
+  location: PropTypes.objectOf(PropTypes.any)
 };
-
 PrivateRoute.defaultProps = {
-  isAuthorized: false,
   location: undefined
 };
-
-const mapStateToProps = rootState => ({
-  isAuthorized: rootState.profile.isAuthorized
-});
-
-export default connect(mapStateToProps)(PrivateRoute);
+export default PrivateRoute;

@@ -4,18 +4,17 @@ import { Button, Comment as CommentUI, Form, Icon, Popup } from 'semantic-ui-rea
 import moment from 'moment';
 import { getUserImgLink } from 'src/helpers/imageHelper';
 import TextareaAutosize from 'react-textarea-autosize';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles.module.scss';
 import { DeleteDialog } from '../DeleteDialog';
 import { deleteComment, likeComment, updateComment } from '../../containers/ExpandedPost/asyncThunks';
 
 const Comment = (
   { comment: { id, body, createdAt, user, likeCount, dislikeCount, reactions },
-    user: currentUser,
     postId
   }
 ) => {
-  const isMineComment = currentUser.id === user.id;
+  const isMineComment = useSelector(state => state.profile.user.id === user.id);
 
   const rArray = [...reactions];
   const likesReactions = rArray.length ? rArray.filter(r => r.isLike).map(r => r.user.username).join(', ') : ' ';
@@ -32,6 +31,7 @@ const Comment = (
   const onCloseDeleteDialog = () => setDeleteDialog(false);
 
   const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.profile.user);
 
   const onDelete = () => {
     dispatch(deleteComment({ id, postId }));
@@ -129,7 +129,6 @@ const Comment = (
   );
 };
 Comment.propTypes = {
-  user: PropTypes.objectOf(PropTypes.any).isRequired,
   comment: PropTypes.objectOf(PropTypes.any).isRequired,
   postId: PropTypes.string.isRequired
 };

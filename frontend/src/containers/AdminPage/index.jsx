@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, Item, Message } from 'semantic-ui-react';
 import { loadUsers, saveRole } from '../Profile/asyncThunks';
 import Spinner from '../../components/Spinner';
@@ -9,12 +7,18 @@ import styles from '../Thread/styles.module.scss';
 import adminStyle from './styles.module.scss';
 import { AdminChangeRole } from '../../components/AdminChangeRole';
 
-const AdminPage = ({ users, allRoles, loadUsers: loadAll, saveRole: saveUserRole, status, error }) => {
+const AdminPage = () => {
   const [isModal, setModal] = useState(false);
   const [roleUser, setUser] = useState(null);
 
+  const dispatch = useDispatch();
+  const users = useSelector(state => state.profile.users);
+  const error = useSelector(state => state.profile.error);
+  const status = useSelector(state => state.profile.status);
+  const allRoles = useSelector(state => state.profile.roles);
+
   useEffect(() => {
-    if (!users) { loadAll(); }
+    if (!users) dispatch(loadUsers());
   }, []);
 
   const userChoice = (e, user) => {
@@ -53,39 +57,10 @@ const AdminPage = ({ users, allRoles, loadUsers: loadAll, saveRole: saveUserRole
           user={roleUser}
           roles={allRoles}
           close={() => setModal(false)}
-          saveRole={saveUserRole}
+          saveRole={dispatch(saveRole())}
         />
       )}
     </Container>
   );
 };
-AdminPage.propTypes = {
-  users: PropTypes.arrayOf(PropTypes.object),
-  allRoles: PropTypes.arrayOf(PropTypes.object),
-  loadUsers: PropTypes.func.isRequired,
-  saveRole: PropTypes.func.isRequired,
-  error: PropTypes.string,
-  status: PropTypes.string
-};
-AdminPage.defaultProps = {
-  users: null,
-  allRoles: null,
-  error: null,
-  status: 'idle'
-};
-const mapStateToProps = rootState => ({
-  users: rootState.profile.users,
-  allRoles: rootState.profile.roles,
-  error: rootState.profile.error,
-  status: rootState.profile.status
-});
-const actions = {
-  loadUsers,
-  saveRole
-};
-const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(AdminPage);
+export default AdminPage;

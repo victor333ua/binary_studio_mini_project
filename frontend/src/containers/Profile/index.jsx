@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserImgLink } from 'src/helpers/imageHelper';
 import {
   Button,
@@ -8,14 +7,18 @@ import {
   Grid, Icon,
   Image, Message
 } from 'semantic-ui-react';
-import { bindActionCreators } from 'redux';
 import validator from 'validator';
 import styles from './styles.module.scss';
 import * as imageService from '../../services/imageService';
 import { saveUser } from './asyncThunks';
 import PasswordInput from '../../components/PasswordInput';
+import { profileResetError } from './slice';
 
-const Profile = ({ user, status, saveUser: save }) => {
+const Profile = () => {
+  const user = useSelector(state => state.profile.user);
+  const status = useSelector(state => state.profile.status);
+  const error = useSelector(state => state.profile.error?.message);
+
   const [isEditMode, setEditMode] = useState(false);
   const [email, setEMail] = useState(user.email);
   const [password, setPassword] = useState(null);
@@ -23,10 +26,13 @@ const Profile = ({ user, status, saveUser: save }) => {
   const [image, setImage] = useState(getUserImgLink(user.image));
   const [isUploading, setIsUploading] = useState(false);
   const [errorUploadingImage, setErrorUploading] = useState(null);
-  const [error, setError] = useState(null);
   const [isEmailValid, setIsEmailValid] = useState(true);
 
+  const dispatch = useDispatch();
   const combinedError = error || errorUploadingImage;
+  let headerMessage = '';
+  if (error) headerMessage = 'Server Error';
+  if (errorUploadingImage) headerMessage = 'Error Uploading Image';
 
   const handleUploadFile = async ({ target }) => {
     setErrorUploading(null);
@@ -41,20 +47,16 @@ const Profile = ({ user, status, saveUser: save }) => {
     }
   };
 
-  const setNewValue = fSetNew => value => {
-    setError(null);
-    fSetNew(value);
+  const setNewValue = funcSetNew => value => {
+    dispatch(profileResetError());
+    funcSetNew(value);
   };
 
-  const formSubmit = async () => {
+  const formSubmit = () => {
     if (!isEmailValid) return;
     const userImage = image?.id === user.image?.id ? user.image : image;
     const newUser = { ...user, email, password, username, image: userImage };
-    try {
-      await save(newUser);
-    } catch (err) {
-      setError(err.message);
-    }
+    dispatch(saveUser(newUser));
     setEditMode(false);
   };
 
@@ -105,7 +107,7 @@ const Profile = ({ user, status, saveUser: save }) => {
           />
           <Message
             error
-            header="Server error"
+            header={headerMessage}
             content={combinedError}
           />
           <br />
@@ -158,26 +160,4 @@ const Profile = ({ user, status, saveUser: save }) => {
     </Grid>
   );
 };
-
-Profile.propTypes = {
-  user: PropTypes.objectOf(PropTypes.any),
-  status: PropTypes.string.isRequired,
-  saveUser: PropTypes.func.isRequired
-};
-
-Profile.defaultProps = {
-  user: {}
-};
-
-const mapStateToProps = rootState => ({
-  user: rootState.profile.user,
-  status: rootState.profile.status
-});
-
-const actions = { saveUser };
-const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Profile);
+export default Profile;

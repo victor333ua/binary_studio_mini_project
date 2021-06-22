@@ -1,26 +1,37 @@
 import React from 'react';
 import { Button, Modal } from 'semantic-ui-react';
-import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { postsResetError } from '../../containers/Thread/slice';
 
-export const ModalNotAllowed = ({ resetError }) => (
-  <Modal
-    dimmer="inverted"
-    open
-    onClose={e => { resetError(); e.preventDefault(); }}
-  >
-    <Modal.Header>
-      Guest!
-    </Modal.Header>
-    <Modal.Content>
-      You do not have permissions to do that
-    </Modal.Content>
-    <Modal.Actions>
-      <Button positive onClick={e => { resetError(); e.preventDefault(); }}>
-        Ok
-      </Button>
-    </Modal.Actions>
-  </Modal>
-);
-ModalNotAllowed.propTypes = {
-  resetError: PropTypes.func.isRequired
+export const ModalNotAllowed = () => {
+  const dispatch = useDispatch();
+
+  return (
+    <Modal
+      dimmer="inverted"
+      open
+      onClose={e => {
+        dispatch(postsResetError());
+        e.preventDefault();
+      }}
+    >
+      <Modal.Header>
+        Guest!
+      </Modal.Header>
+      <Modal.Content>
+        You do not have permissions to do that
+      </Modal.Content>
+      <Modal.Actions>
+        <Button
+          positive
+          onClick={e => {
+            dispatch(postsResetError());
+            e.preventDefault();
+          }}
+        >
+          Ok
+        </Button>
+      </Modal.Actions>
+    </Modal>
+  );
 };

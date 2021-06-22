@@ -4,9 +4,11 @@ import { addLike } from '../../helpers/likesHelper';
 import { addComment, deleteComment, likeComment, toggleExpandedPost, updateComment } from '../ExpandedPost/asyncThunks';
 
 const initialState = {
+  posts: [],
   status: 'idle',
   error: null,
-  pFilter: { selector: 0, from: 0, count: 10 }
+  pFilter: { selector: 0, from: 0, count: 10 },
+  hasMorePosts: true
 };
 
 const setError = (state, action) => {

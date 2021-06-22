@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Button } from 'semantic-ui-react';
+import { useDispatch } from 'react-redux';
+import { addComment } from '../../containers/ExpandedPost/asyncThunks';
 
-const AddComment = ({
-  postId,
-  addComment
-}) => {
+const AddComment = ({ postId }) => {
   const [body, setBody] = useState('');
 
-  const handleAddComment = async () => {
-    if (!body) {
-      return;
-    }
-    await addComment({ postId, body });
+  const dispatch = useDispatch();
+
+  const handleAddComment = () => {
+    if (!body) return;
+    dispatch(addComment({ postId, body }));
     setBody('');
   };
 
@@ -29,8 +28,6 @@ const AddComment = ({
 };
 
 AddComment.propTypes = {
-  addComment: PropTypes.func.isRequired,
   postId: PropTypes.string.isRequired
 };
-
 export default AddComment;

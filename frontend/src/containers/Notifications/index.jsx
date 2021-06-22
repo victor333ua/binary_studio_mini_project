@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 import { Client } from '@stomp/stompjs';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { applyPost } from '../Thread/asyncThunks';
 import {
   deletePostAction,
@@ -16,49 +14,41 @@ import {
   updateCommentAction
 } from '../Thread/slice';
 
-const Notifications = (
-  { user,
-    expandedPost,
-    applyPost: getPost,
-    likePostAction: likePost,
-    updatePostAction: updatePost,
-    deletePostAction: deletePost,
-    likeCommentAction: likeComment,
-    addCommentAction: addComment,
-    updateCommentAction: updateComment,
-    deleteCommentAction: deleteComment
-  }
-) => {
+const Notifications = () => {
+  const user = useSelector(state => state.profile.user);
+  const expandedPost = useSelector(state => state.posts.expandedPost);
   const { id } = user;
   const currentPostId = expandedPost?.id;
+
+  const dispatch = useDispatch();
 
   const likePostCB = message => {
     const { isNewRecord, postId, postOwner, isLike, currentUser } = JSON.parse(message.body);
     // it was my own like
     if (currentUser.id === id) return;
     if (postOwner.id === id && isLike && isNewRecord != null) NotificationManager.info('Your post was liked!');
-    likePost({ postId, isLike, isNewRecord, currentUser });
+    dispatch(likePostAction({ postId, isLike, isNewRecord, currentUser }));
   };
 
-  const getPostCB = async message => {
+  const getPostCB = message => {
     const { userId, postId } = JSON.parse(message.body);
     if (userId === id) return; // my new post already added to state
     NotificationManager.info('New Post Added!');
-    await getPost(postId);
+    dispatch(applyPost(postId));
   };
 
   const updatePostCB = message => {
     const { id: postId, body, image, currentUser } = JSON.parse(message.body);
     if (currentUser.id === id) return;
     NotificationManager.info(`user ${currentUser.username} changed his post`);
-    updatePost({ id: postId, body, image });
+    dispatch(updatePostAction({ id: postId, body, image }));
   };
 
   const deletePostCB = message => {
     const { id: postId, currentUser } = JSON.parse(message.body);
     if (currentUser.id === id) return;
     NotificationManager.info(`user ${currentUser.username} deleted his post`);
-    deletePost(postId);
+    dispatch(deletePostAction({ id: postId }));
   };
 
   const likeCommentCB = message => {
@@ -66,7 +56,7 @@ const Notifications = (
     if (currentUser.id === id) return; // it was my own like
     if (isLike && isNewRecord != null) NotificationManager.info('Your comment was liked!');
     if (currentPostId === postId) {
-      likeComment({ commentId, isLike, isNewRecord, currentUser });
+      dispatch(likeCommentAction({ postId, commentId, isLike, isNewRecord, currentUser }));
     }
   };
 
@@ -74,7 +64,7 @@ const Notifications = (
     const comment = JSON.parse(message.body);
     if (comment.user.id === id) return; // action with my comment already added to state
     NotificationManager.info('New comment added!');
-    addComment(comment); // it's necessary for all posts
+    dispatch(addCommentAction({ comment })); // it's necessary for all posts
     // toggleExpandedPost(postId); // get expPost with comments from server
   };
 
@@ -83,7 +73,7 @@ const Notifications = (
     if (userId === id) return; // action with my comment already added to state
     NotificationManager.info('some comment updated!');
     if (currentPostId === postId) {
-      updateComment({ id: commentId, body });
+      dispatch(updateCommentAction({ id: commentId, body }));
     }
   };
 
@@ -91,7 +81,7 @@ const Notifications = (
     const { userId, postId, id: commentId } = JSON.parse(message.body);
     if (userId === id) return; // action with my comment already added to state
     NotificationManager.info('some comment deleted!');
-    deleteComment({ id: commentId, postId }); // it's necessary for all posts
+    dispatch(deleteCommentAction({ id: commentId, postId })); // it's necessary for all posts
   };
 
   const containerForStompClient = useRef(null);
@@ -178,40 +168,4 @@ const Notifications = (
     </>
   );
 };
-Notifications.defaultProps = { user: undefined, expandedPost: undefined };
-
-Notifications.propTypes = {
-  user: PropTypes.objectOf(PropTypes.any),
-  expandedPost: PropTypes.objectOf(PropTypes.any),
-  applyPost: PropTypes.func.isRequired,
-  likePostAction: PropTypes.func.isRequired,
-  updatePostAction: PropTypes.func.isRequired,
-  deletePostAction: PropTypes.func.isRequired,
-  likeCommentAction: PropTypes.func.isRequired,
-  addCommentAction: PropTypes.func.isRequired,
-  updateCommentAction: PropTypes.func.isRequired,
-  deleteCommentAction: PropTypes.func.isRequired
-};
-
-const mapStateToProps = rootState => ({
-  user: rootState.profile.user,
-  expandedPost: rootState.posts.expandedPost
-});
-
-const actions = {
-  applyPost,
-  likePostAction,
-  updatePostAction,
-  deletePostAction,
-  likeCommentAction,
-  addCommentAction,
-  updateCommentAction,
-  deleteCommentAction
-};
-
-const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Notifications);
+export default Notifications;
