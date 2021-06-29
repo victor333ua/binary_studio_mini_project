@@ -65,5 +65,9 @@ const usersSlice = createSlice({
     }
   }
 });
+export const getCurrentUser = state => state.profile.user;
+export const getPostsError = state => state.posts.error;
+export const getPostsStatus = state => state.posts.status;
+
 export const { userLogout, profileLoading, profileRejected, profileResetError } = usersSlice.actions;
 export default usersSlice.reducer;

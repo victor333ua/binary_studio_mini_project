@@ -54,7 +54,7 @@ const Notifications = () => {
   const likeCommentCB = message => {
     const { postId, isNewRecord, commentId, isLike, currentUser } = JSON.parse(message.body);
     if (currentUser.id === id) return; // it was my own like
-    if (isLike && isNewRecord != null) NotificationManager.info('Your comment was liked!');
+    if (isLike && isNewRecord != null) NotificationManager.info('Some comment was liked!');
     if (currentPostId === postId) {
       dispatch(likeCommentAction({ postId, commentId, isLike, isNewRecord, currentUser }));
     }
