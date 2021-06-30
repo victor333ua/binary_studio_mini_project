@@ -19,8 +19,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static com.threadjava.config.SecurityConstants.EXPIRATION_TIME;
-
 @Service
 public class TokenService {
 
