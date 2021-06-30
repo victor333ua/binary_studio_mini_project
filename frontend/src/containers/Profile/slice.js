@@ -45,9 +45,9 @@ const usersSlice = createSlice({
 
     [loadUsers.pending]: setPending,
     [loadUsers.rejected]: setError,
-    [loadUsers.fulfilled]: (state, action) => {
-      state.users = action.payload.users;
-      state.roles = action.payload.roles;
+    [loadUsers.fulfilled]: (state, { payload }) => {
+      state.users = payload.users;
+      state.roles = payload.roles;
       state.status = 'completed';
     },
 
@@ -66,8 +66,8 @@ const usersSlice = createSlice({
   }
 });
 export const getCurrentUser = state => state.profile.user;
-export const getPostsError = state => state.posts.error;
-export const getPostsStatus = state => state.posts.status;
+export const getProfileStatus = state => state.profile.status;
+export const getProfileError = state => state.profile.error;
 
 export const { userLogout, profileLoading, profileRejected, profileResetError } = usersSlice.actions;
 export default usersSlice.reducer;

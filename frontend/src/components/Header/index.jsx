@@ -6,11 +6,11 @@ import { Header as HeaderUI, Image, Grid, Icon, Button, Container } from 'semant
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles.module.scss';
 import { ADMIN } from '../../scenes/rolesConstants';
-import { userLogout } from '../../containers/Profile/slice';
+import { getCurrentUser, userLogout } from '../../containers/Profile/slice';
 
 const Header = () => {
   const dispatch = useDispatch();
-  const user = useSelector(state => state.profile.user);
+  const user = useSelector(getCurrentUser);
 
   return (
     <Container text className={styles.headerWrp}>

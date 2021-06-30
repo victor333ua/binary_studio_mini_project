@@ -6,20 +6,20 @@ import AddPost from 'src/components/AddPost';
 import { Container, Grid, Loader, Message, Segment } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { loadMorePosts } from './asyncThunks';
-import { postsReset } from './slice';
+import { getAllPostsIds, getPostsError, postsReset } from './slice';
 
 import styles from './styles.module.scss';
 import CustomCheckbox from '../../components/CustomCheckbox';
 import { GUEST } from '../../scenes/rolesConstants';
 import { ModalNotAllowed } from '../../components/ModalNotAllowed';
-import { getCurrentUser, getPostsError } from '../Profile/slice';
+import { getCurrentUser } from '../Profile/slice';
 
 const label = ['my own posts', "other people's", 'with my like'];
 
 const Thread = () => {
   const dispatch = useDispatch();
   const user = useSelector(getCurrentUser);
-  const posts = useSelector(state => state.posts.posts);
+  const postsIds = useSelector(getAllPostsIds);
   const { selector, from, count } = useSelector(state => state.posts.pFilter);
   const hasMorePosts = useSelector(state => state.posts.hasMorePosts);
   const expandedPost = useSelector(state => state.posts.expandedPost);
@@ -68,7 +68,7 @@ const Thread = () => {
         hasMore={hasMorePosts}
         loader={<Loader active inline="centered" key={0} />}
       >
-        {posts.map(post => (<Post post={post} key={post.id} />))}
+        {postsIds.map(postId => (<Post postId={postId} key={postId} />))}
       </InfiniteScroll>
       {expandedPost && <ExpandedPost />}
     </Container>

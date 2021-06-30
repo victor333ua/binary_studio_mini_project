@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import validator from 'validator';
 import { Form, Button, Segment, Message, Modal } from 'semantic-ui-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { profileResetError } from '../Profile/slice';
+import { getProfileError, getProfileStatus, profileResetError } from '../Profile/slice';
 import { login } from '../Profile/asyncThunks';
 import { resetPassword } from '../../services/authService';
 import styles from './styles.module.scss';
@@ -15,8 +15,8 @@ const LoginForm = () => {
   const [mailError, setMailError] = useState(null);
   const [isEmailValid, setIsEmailValid] = useState(true);
 
-  const status = useSelector(state => state.profile.status);
-  const error = useSelector(state => state.profile.error);
+  const status = useSelector(getProfileStatus);
+  const error = useSelector(getProfileError);
 
   const dispatch = useDispatch();
 
@@ -28,6 +28,8 @@ const LoginForm = () => {
     setNewState(data);
     dispatch(profileResetError()); // set error to null in redux state to hide error message
   };
+
+  const onPasswordChanged = setNewData(setPassword);
 
   const handleLoginClick = () => {
     if (!isEmailValid) return;
@@ -81,7 +83,7 @@ const LoginForm = () => {
             onChange={ev => setNewData(setEmail)(ev.target.value)}
             onBlur={() => setIsEmailValid(validator.isEmail(email))}
           />
-          <PasswordInput onChangePassword={setNewData(setPassword)} />
+          <PasswordInput onChangePassword={onPasswordChanged} />
           <div>
             Forgot password?
             {' '}

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles.module.scss';
 import * as imageService from '../../services/imageService';
 import { addPost } from '../../containers/Thread/asyncThunks';
+import { getPostsStatus } from '../../containers/Thread/slice';
 
 const AddPost = () => {
   const [body, setBody] = useState('');
@@ -12,8 +13,7 @@ const AddPost = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [errorUploadingImage, setErrorUploading] = useState(null);
 
-  const errorAddingPost = useSelector(state => state.posts.error?.message);
-  const status = useSelector(state => state.posts.status);
+  const status = useSelector(getPostsStatus);
   const isAddPostLoading = status === 'loading';
   const dispatch = useDispatch();
 
@@ -35,12 +35,9 @@ const AddPost = () => {
       setIsUploading(false);
     }
   };
-
-  const isError = errorUploadingImage || errorAddingPost;
-
   return (
     <Segment>
-      <Form onSubmit={handleAddPost} error={Boolean(isError)}>
+      <Form onSubmit={handleAddPost} error={Boolean(errorUploadingImage)}>
         <Form.TextArea
           name="body"
           value={body}
@@ -49,8 +46,8 @@ const AddPost = () => {
         />
         <Message
           error
-          header="Server error"
-          content={isError}
+          header="Error Uploading Image"
+          content={errorUploadingImage}
         />
         {image?.imageLink && (
           <div className={styles.imageWrapper}>

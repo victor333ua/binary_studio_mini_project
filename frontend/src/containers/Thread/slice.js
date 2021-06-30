@@ -1,15 +1,22 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { applyPost, deletePost, likePost, updatePost, loadMorePosts } from './asyncThunks';
 import { addLike } from '../../helpers/likesHelper';
 import { addComment, deleteComment, likeComment, toggleExpandedPost, updateComment } from '../ExpandedPost/asyncThunks';
 
-const initialState = {
-  posts: [],
+const postsAdapter = createEntityAdapter({
+  sortComparer: (a, b) => b.createdAt.localeCompare(a.createdAt)
+});
+
+const initialState = postsAdapter.getInitialState({
   status: 'idle',
   error: null,
-  pFilter: { selector: 0, from: 0, count: 10 },
+  pFilter: {
+    selector: 0,
+    from: 0,
+    count: 10
+  },
   hasMorePosts: true
-};
+});
 
 const setError = (state, action) => {
   state.status = 'error';
@@ -22,25 +29,24 @@ const setPending = state => {
 };
 
 const deletePostAct = (state, action) => {
-  const index = state.posts.findIndex(post => post.id === action.payload.id);
-  state.posts.splice(index, 1);
+  const { id } = action.payload;
+  postsAdapter.removeOne(state, id);
   state.status = 'completed';
 };
+
 const updatePostAct = (state, action) => {
   const { id, body, image } = action.payload;
-  const index = state.posts.findIndex(post => post.id === id);
-  const updatedItem = { ...state.posts[index], body, image };
-  state.posts.splice(index, 1, updatedItem);
+  postsAdapter.updateOne(state, { id, changes: { body, image } });
   const exPost = state.expandedPost;
   if (exPost && exPost.id === id) state.expandedPost = { ...exPost, body, image };
   state.status = 'completed';
 };
+
 const likePostAct = (state, action) => {
   const { postId, isLike, isNewRecord, currentUser } = action.payload;
-  state.posts = state.posts.map(post => (post.id !== postId
-    ? post
-    : addLike(post, isLike, isNewRecord, currentUser)
-  ));
+  state.entities[postId] = addLike(
+    state.entities[postId], isLike, isNewRecord, currentUser
+  );
   const exPost = state.expandedPost;
   if (exPost && exPost.id === postId) {
     state.expandedPost = addLike(exPost, isLike, isNewRecord, currentUser);
@@ -49,10 +55,10 @@ const likePostAct = (state, action) => {
 };
 const addCommentAct = (state, action) => {
   const { postId } = action.payload.comment;
-  state.posts = state.posts.map(post => (post.id !== postId
-    ? post
-    : ({ ...post, commentCount: Number(post.commentCount) + 1 })));
-
+  const commentCount = Number(state.entities[postId].commentCount) + 1;
+  postsAdapter.updateOne(state, { payload: {
+    id: postId, changes: { commentCount }
+  } });
   const exPost = state.expandedPost;
   if (exPost && exPost.id === postId) {
     state.expandedPost = {
@@ -82,9 +88,9 @@ const updateCommentAct = (state, action) => {
 };
 const deleteCommentAct = (state, action) => {
   const { id, postId } = action.payload;
-  state.posts = state.posts.map(post => (post.id !== postId
-    ? post
-    : ({ ...post, commentCount: Number(post.commentCount) - 1 })));
+  const commentCount = Number(state.entities[postId].commentCount) - 1;
+  action.payload = { id: postId, changes: { commentCount } };
+  postsAdapter.updateOne(state, action);
 
   const exPost = state.expandedPost;
   if (exPost && exPost.id === postId) {
@@ -107,7 +113,7 @@ const postsSlice = createSlice({
       state.status = 'idle';
     },
     postsReset(state) {
-      state.posts = [];
+      postsAdapter.setAll(state, []);
       state.pFilter.from = 0;
       state.hasMorePosts = true;// !important, otherwise loadMore don't work after switch
     },
@@ -120,16 +126,17 @@ const postsSlice = createSlice({
     addCommentAction: addCommentAct
   },
   extraReducers: {
-    [loadMorePosts.fulfilled]: (state, action) => {
-      state.posts = [...(state.posts || []), ...action.payload.posts];
+    [loadMorePosts.fulfilled]: (state, { payload }) => {
+      postsAdapter.upsertMany(state, payload.posts);
       const filter = state.pFilter;
-      state.pFilter = { selector: action.payload.selector, from: filter.from + filter.count, count: filter.count };
-      state.hasMorePosts = Boolean(action.payload.posts.length);
+      state.pFilter = { selector: payload.selector, from: filter.from + filter.count, count: filter.count };
+      state.hasMorePosts = Boolean(payload.posts.length);
       state.status = 'completed';
     },
 
     [applyPost.fulfilled]: (state, action) => {
-      state.posts.unshift(action.payload.post);
+      action.payload = action.payload.post;
+      postsAdapter.addOne(state, action);
       state.status = 'completed';
     },
     [applyPost.pending]: setPending,
@@ -187,3 +194,13 @@ export const {
   likeCommentAction,
   addCommentAction
 } = postsSlice.actions;
+
+export const getPostsStatus = state => state.posts.status;
+export const getPostsError = state => state.posts.error;
+
+export const {
+  selectAll: getAllPosts,
+  selectIds: getAllPostsIds,
+  selectEntities: getPostsEntities,
+  selectById: getPostById
+} = postsAdapter.getSelectors(rootState => rootState.posts);

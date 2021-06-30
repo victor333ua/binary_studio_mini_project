@@ -12,12 +12,12 @@ import styles from './styles.module.scss';
 import * as imageService from '../../services/imageService';
 import { saveUser } from './asyncThunks';
 import PasswordInput from '../../components/PasswordInput';
-import { profileResetError } from './slice';
+import { getCurrentUser, getProfileError, getProfileStatus, profileResetError } from './slice';
 
 const Profile = () => {
-  const user = useSelector(state => state.profile.user);
-  const status = useSelector(state => state.profile.status);
-  const error = useSelector(state => state.profile.error?.message);
+  const user = useSelector(getCurrentUser);
+  const status = useSelector(getProfileStatus);
+  const error = useSelector(getProfileError)?.message;
 
   const [isEditMode, setEditMode] = useState(false);
   const [email, setEMail] = useState(user.email);

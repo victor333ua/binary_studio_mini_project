@@ -11,8 +11,10 @@ import * as imageService from '../../services/imageService';
 import SharedPostLink from '../SharedPostLink';
 import { deletePost, likePost, updatePost } from '../../containers/Thread/asyncThunks';
 import { toggleExpandedPost } from '../../containers/ExpandedPost/asyncThunks';
+import { getPostById } from '../../containers/Thread/slice';
+import { getCurrentUser } from '../../containers/Profile/slice';
 
-const Post = ({ post }) => {
+const Post = ({ postId }) => {
   const {
     id,
     image,
@@ -23,11 +25,11 @@ const Post = ({ post }) => {
     commentCount,
     createdAt,
     reactions
-  } = post;
+  } = useSelector(state => getPostById(state, postId));
 
   const dispatch = useDispatch();
 
-  const currentUser = useSelector(state => state.profile.user);
+  const currentUser = useSelector(getCurrentUser);
   const isMinePost = currentUser.id === user.id;
 
   const [text, setText] = useState(body);
@@ -71,7 +73,7 @@ const Post = ({ post }) => {
 
   const onUpdatePost = () => {
     const postImage = image?.id === editImage?.id ? image : editImage;
-    dispatch(updatePost({ id: post.id, body: text, image: postImage, currentUser }));
+    dispatch(updatePost({ id: postId, body: text, image: postImage, currentUser }));
     setEdit(false);
   };
 
@@ -212,6 +214,6 @@ const Post = ({ post }) => {
 };
 
 Post.propTypes = {
-  post: PropTypes.objectOf(PropTypes.any).isRequired
+  postId: PropTypes.string.isRequired
 };
 export default Post;
