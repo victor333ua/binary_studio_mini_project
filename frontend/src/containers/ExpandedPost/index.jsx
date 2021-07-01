@@ -8,14 +8,16 @@ import AddComment from 'src/components/AddComment';
 import { toggleExpandedPost } from './asyncThunks';
 import { GUEST } from '../../scenes/rolesConstants';
 import { ModalNotAllowed } from '../../components/ModalNotAllowed';
+import { getCurrentUser } from '../Profile/slice';
+import { getPostsError } from '../Thread/slice';
 
 const ExpandedPost = () => {
   const dispatch = useDispatch();
   const toggle = () => dispatch(toggleExpandedPost());
 
-  const currentUser = useSelector(state => state.profile.user);
+  const currentUser = useSelector(getCurrentUser);
   const post = useSelector(state => state.posts.expandedPost);
-  const error = useSelector(state => state.posts.error);
+  const error = useSelector(getPostsError);
 
   let sortedComments = [];
   if (post.comments) {
@@ -30,11 +32,12 @@ const ExpandedPost = () => {
         />
       ));
   }
+  const isForbidden = error?.message === 'Forbidden';
 
   return (
     <Modal centered={false} open onClose={() => toggle()}>
       <Modal.Content>
-        <Post post={post} />
+        <Post postId={post.id} />
         <CommentUI.Group style={{ maxWidth: '100%' }}>
           <Header as="h3" dividing>
             Comments
@@ -46,8 +49,8 @@ const ExpandedPost = () => {
         </CommentUI.Group>
       </Modal.Content>
       <Modal.Actions>
-        { Boolean(error) && error.status === 403 && <ModalNotAllowed />}
-        { Boolean(error) && error.status !== 403 && <Message error header="Server error!" content={error.message} />}
+        { Boolean(error) && isForbidden && <ModalNotAllowed />}
+        { Boolean(error) && !isForbidden && <Message error header="Server error!" content={error.message} />}
       </Modal.Actions>
     </Modal>
   );

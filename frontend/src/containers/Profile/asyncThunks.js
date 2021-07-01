@@ -34,7 +34,7 @@ export const loadUsers = createAsyncThunk(
 
 export const saveRole = createAsyncThunk(
   'profile/saveRole',
-  async (user, role) => {
+  async ({ user, role }) => {
     await userService.save({ ...user, roles: [role] });
     return { userId: user.id, role };
   }

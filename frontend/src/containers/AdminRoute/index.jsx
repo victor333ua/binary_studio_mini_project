@@ -20,7 +20,7 @@ const AdminRoute = ({ component: Component, ...rest }) => {
   );
 };
 AdminRoute.propTypes = {
-  component: PropTypes.objectOf(PropTypes.any).isRequired,
+  component: PropTypes.func.isRequired,
   location: PropTypes.objectOf(PropTypes.any)
 };
 AdminRoute.defaultProps = {

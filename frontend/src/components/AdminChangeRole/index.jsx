@@ -1,26 +1,32 @@
 import React, { useState } from 'react';
 import { Button, Dropdown, Item, Message, Modal } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 import styles from './styles.module.scss';
+import { saveRole } from '../../containers/Profile/asyncThunks';
 
-export const AdminChangeRole = ({ user, roles, close, saveRole }) => {
+export const AdminChangeRole = ({ user, close }) => {
   const [roleIndex, setRoleIndex] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [roleTitle, setRoleTitle] = useState(user.roles[0].name);
 
+  const dispatch = useDispatch();
+  const roles = useSelector(state => state.profile.roles);
+
   const options = roles.map((r, index) => ({ key: r.name, text: r.name, value: index }));
 
   const changeRole = (e, { value }) => {
     setRoleIndex(value);
+    e.preventDefault();
   };
 
   const save = async () => {
     setLoading(true);
-    const currentRole = roles[roleIndex];
+    const role = roles[roleIndex];
     try {
-      await saveRole(user, currentRole);
-      setRoleTitle(currentRole.name);
+      await dispatch(saveRole({ user, role }));
+      setRoleTitle(role.name);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -65,8 +71,6 @@ export const AdminChangeRole = ({ user, roles, close, saveRole }) => {
 };
 AdminChangeRole.propTypes = {
   user: PropTypes.objectOf(PropTypes.any).isRequired,
-  roles: PropTypes.arrayOf(PropTypes.object).isRequired,
-  close: PropTypes.func.isRequired,
-  saveRole: PropTypes.func.isRequired
+  close: PropTypes.func.isRequired
 };
 

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Item, Message } from 'semantic-ui-react';
-import { loadUsers, saveRole } from '../Profile/asyncThunks';
+import { loadUsers } from '../Profile/asyncThunks';
 import Spinner from '../../components/Spinner';
 import styles from '../Thread/styles.module.scss';
 import adminStyle from './styles.module.scss';
 import { AdminChangeRole } from '../../components/AdminChangeRole';
+import { getProfileError, getProfileStatus } from '../Profile/slice';
 
 const AdminPage = () => {
   const [isModal, setModal] = useState(false);
@@ -13,9 +14,8 @@ const AdminPage = () => {
 
   const dispatch = useDispatch();
   const users = useSelector(state => state.profile.users);
-  const error = useSelector(state => state.profile.error);
-  const status = useSelector(state => state.profile.status);
-  const allRoles = useSelector(state => state.profile.roles);
+  const error = useSelector(getProfileError);
+  const status = useSelector(getProfileStatus);
 
   useEffect(() => {
     if (!users) dispatch(loadUsers());
@@ -45,7 +45,7 @@ const AdminPage = () => {
   return (
     <Container text className={styles.threadContent}>
       {status === 'loading' && <Spinner />}
-      {error !== null && <Message header="Server error!" content={error} error />}
+      {error && <Message header="Server error!" content={error.message} error />}
       {status === 'completed'
         && (
           <Item.Group divided style={{ maxWidth: 450 }}>
@@ -55,9 +55,7 @@ const AdminPage = () => {
       {isModal && (
         <AdminChangeRole
           user={roleUser}
-          roles={allRoles}
           close={() => setModal(false)}
-          saveRole={dispatch(saveRole())}
         />
       )}
     </Container>

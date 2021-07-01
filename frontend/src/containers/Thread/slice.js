@@ -53,22 +53,7 @@ const likePostAct = (state, action) => {
   }
   state.status = 'completed';
 };
-const addCommentAct = (state, action) => {
-  const { postId } = action.payload.comment;
-  const commentCount = Number(state.entities[postId].commentCount) + 1;
-  postsAdapter.updateOne(state, { payload: {
-    id: postId, changes: { commentCount }
-  } });
-  const exPost = state.expandedPost;
-  if (exPost && exPost.id === postId) {
-    state.expandedPost = {
-      ...exPost,
-      comments: [...(exPost.comments || []), action.payload.comment],
-      commentCount: Number(exPost.commentCount) + 1
-    };
-  }
-  state.status = 'completed';
-};
+
 const likeCommentAct = (state, action) => {
   const exPost = state.expandedPost;
   const { postId, commentId, isLike, isNewRecord, currentUser } = action.payload;
@@ -86,12 +71,23 @@ const updateCommentAct = (state, action) => {
     .map(c => (c.id !== id ? c : { ...c, body }));
   state.status = 'completed';
 };
+
+const addCommentAct = (state, action) => {
+  const { postId } = action.payload.comment;
+  const commentCount = Number(state.entities[postId].commentCount) + 1;
+  postsAdapter.updateOne(state, { id: postId, changes: { commentCount } });
+  const exPost = state.expandedPost;
+  if (exPost && exPost.id === postId) {
+    state.expandedPost.comments = [...(exPost.comments || []), action.payload.comment];
+    state.expandedPost.commentCount = Number(exPost.commentCount) + 1;
+  }
+  state.status = 'completed';
+};
+
 const deleteCommentAct = (state, action) => {
   const { id, postId } = action.payload;
   const commentCount = Number(state.entities[postId].commentCount) - 1;
-  action.payload = { id: postId, changes: { commentCount } };
-  postsAdapter.updateOne(state, action);
-
+  postsAdapter.updateOne(state, { id: postId, changes: { commentCount } });
   const exPost = state.expandedPost;
   if (exPost && exPost.id === postId) {
     const index = exPost.comments.findIndex(comment => comment.id === id);

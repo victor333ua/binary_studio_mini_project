@@ -28,10 +28,8 @@ const Routing = () => {
           <PrivateRoute exact path="/profile" component={Profile}/>
           <PrivateRoute path="/share/:postHash" component={SharedPost}/>
           <PublicRoute path="/reset/:token" component={ChangePassword}/>
-          <AdminRoute exact path="/admin">
-            <AdminPage />
-          </AdminRoute>
-          <Route path="*" exact component={NotFound}/>
+          <AdminRoute exact path="/admin" component={AdminPage}/>
+          <Route path="*" component={NotFound}/>
         </Switch>
       </main>
       <Notifications />
